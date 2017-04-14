@@ -10,14 +10,45 @@ import numpy as np
 import dill
 import CreateBigrams
 import morphItDataExtractor
+import random
 
 class DataCreation (object):
     """
     This class contains a dictionary composed by word, POS tags, output, usage, score
     """
     def __init__(self): # inizializza la classe
-        self.data={}
-        self.datafilename= 'my_data.pkl' # .pkl per i dati serializzati
+        
+        self.datafilename = 'my_data.pkl' # .pkl per i dati serializzati
+        self.proportiontraining = 0.75
+        
+        self.data = self.LoadData()
+        if not self.data:
+            self.data = {}
+            self.DataUploading()
+            self.SaveData(a.data)     
+        self.CreateIndexes()
+        
+        
+    def YieldTraining (self):
+        for key in self.ws[:self.limitindex]:
+            vectIn = self.data[key]['vector']
+            vectOut = self.data[key]['output']
+            
+            yield (vectIn, vectOut)
+    
+    def YieldTest (self):
+        for key in self.ws[self.limitindex:]:
+            vectIn = self.data[key]['vector']
+            vectOut = self.data[key]['output']
+            
+            yield (vectIn, vectOut)
+        
+        
+    def CreateIndexes(self):
+        
+        self.limitindex = int(len(self.data)*self.proportiontraining)
+        self.ws = list(self.data.keys())
+        random.shuffle(self.ws)
         
     def DataUploading(self): # carica i dati da morphit e crea i vettori 
         # leggo i dati da morphit
@@ -37,11 +68,15 @@ class DataCreation (object):
         poss = set(poss)
         poss = list(poss)
         dicttradposs={}
+        print(poss)
         for i in range(len(poss)):
-            dicttradposs[poss(i)]=i
+            print(i, poss[i])
+            dicttradposs[poss[i]]=i
         self.dicttradposs=dicttradposs
         
+        print ('sto per vettoriazzare la parola')
         for w in w2:
+            print (w)
             vector = bi.VectorizeWord(w)
             pos = morphit.words[w]
             output = self.CreateOutputVector(pos)            
@@ -65,11 +100,26 @@ class DataCreation (object):
                 return dill.load(f)
         except:
             return False    
+        #creare altre due funzioni savedicttradposs loaddicttradposs
         
-            
+    
+#i=1
+#for c in b:
+#    i+=1
+#    if i <10:
+#        pass
+#    else:
+#        break
+#        
         
 if __name__ == '__main__':
     a=DataCreation()
-    
+    print(len(a.data))  
         
+    print (a.YieldTraining()[1])
+    print (a.YieldTraining()(1))
     
+    print
+    print
+    
+    print (a.YieldTest()(1))
