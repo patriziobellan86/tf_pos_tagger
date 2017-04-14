@@ -73,9 +73,25 @@ with tf.Session() as sess:
     for epoch in range(training_epochs):
         avg_cost = 0.
         total_batch = int(mnist.train.num_examples/batch_size)
+        print('total batch', total_batch)
         # Loop over all batches
         for i in range(total_batch):
-            batch_x, batch_y = mnist.train.next_batch(batch_size)
+            batch_x, batch_y = mnist.train.next_batch(1)#batch_size)
+#            with open('batch_x.txt','a') as fx:
+#                for i in range(len(batch_x)):
+##                print (len(batch_x))
+            print (batch_x[0])
+            print 
+            print 
+            
+##                print
+###                print (batch_x[1])
+##                    with open('batch_y.txt','a') as fy:
+##                        fx.write(str(batch_x[1]))
+##                        fy.write(str(batch_y[1]))
+            print (len(batch_y[0]))
+#                break
+#                    
             # Run optimization op (backprop) and cost op (to get loss value)
             _, c = sess.run([optimizer, cost], feed_dict={x: batch_x,
                                                           y: batch_y})

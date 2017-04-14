@@ -22,11 +22,9 @@ Language, Interaction and Computation Laboratory CLIC
 #==============================================================================
 """
 from __future__ import unicode_literals, with_statement, division
-
+import dill
 import codecs
-import collections
 
-person_reverse = {u's':u'p', u'p': u's'}
 
 class MorphItDataExtractor(object):
 
@@ -40,66 +38,51 @@ class MorphItDataExtractor(object):
         """
         self.MorphItFileName = morphit
 
-        self.verbTags = ['VER','AUX','MOD','CAU','ASP']
-        self.__verbi = collections.defaultdict(list)
+        self.verbTags = ['VER', 'AUX', 'MOD', 'CAU', 'ASP']
+        self.words = self.LoadWords()
+        if not self.words:
+            self.ReadMorphit()
+            self.SaveWords()
+        else:
+            print('data loaded')
 
-        #load verbs from morphit
-        self.__CaricaVerbi ()
+    def isVerb(self, word):
+        if self.words[word] in self.verbTags:
+            return 1#True 
+        return 0#False
+        
+    def Words(self):
+        return self.words.keys()
 
-
-    def QueryPersonaOpposta (self, tverb, infin, verbfeatures):
+    def ReadMorphit(self):
         """
-         Args:
-            tverb (str): verb
-            infin (str): infinitive form of the verb
-            verbfeatures (list): features of the verb
-
-        Returns:
-            verb changed if exist
-            False instead
-
-
-        This method return the same verb but conjugate with the opposite person
-
-        es: sono (1 sing)         return: siamo (1 plur)
-
+        This method loads all the words from morphit
         """
-
-
-        tverb = tverb.lower()
-        infin = infin.lower()
-        try:
-            #list of all the conjugate verbs of the verb given
-            verbs = self.__verbi[infin]
-            try:
-                #person reverse
-                verbfeatures[3] = person_reverse[verbfeatures[3]]
-                #looking for the candidates
-                verbs = [verb for verb in verbs if verb[1] == verbfeatures]
-                #choose only not abbreviate verb
-                maxlenverb = verbs[0]
-                for verb in verbs:
-                    if len(verb[0]) > len(maxlenverb[0]):
-                        maxlenverb = verb
-                return maxlenverb
-            except:
-                return False
-        except ValueError:
-            return False
-
-
-    def __CaricaVerbi (self):
-        """
-        This method loads verbs from morphit
-        """
-        with codecs.open(self.MorphItFileName,'r', 'utf-8') as f:
+        self.words = {}
+        with codecs.open(self.MorphItFileName, 'r', 'utf-8') as f:
             for line in f.readlines():
                 line = line.split()
                 try:
-                    if line[2][:3] in self.verbTags:
-                        line[2]=line[2].split(u'+')
-                        line[2][0]=line[2][0][line[2][0].find(u':')+1:]
-
-                        self.__verbi[line[1]].append([line[0],line[2]])
+#                    print (line)
+                    self.words[line[0]] = line[2][:3]
+#                    if line[2][:3] in self.verbTags:
+#                        line[2]=line[2].split(u'+')
+#                        line[2][0]=line[2][0][line[2][0].find(u':')+1:]
                 except:
                     pass
+        return self.words
+
+    def SaveWords(self):
+        with open('mWords.pkl', 'wb') as f:
+            dill.dump(self.words, f)
+
+    def LoadWords(self):
+        try:
+            with open('mWords.pkl', 'rb') as f:
+                return dill.load(f)
+        except:
+            return False
+
+
+if __name__ == '__main__':
+    a = MorphItDataExtractor('morphitUtf8.txt')
