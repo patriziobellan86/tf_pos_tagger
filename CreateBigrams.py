@@ -66,7 +66,7 @@ class CreateBigrams (object):
             self.len_dict_bigrams = len(self.dictBigrams)
             
         self.vectors = self.__LoadSerializedData(self.vectorsFilename)
-        if not self.vectors & words:
+        if not self.vectors and words:
             self.vectors = self.VectorizeWords(words)
             self.__SaveSerializedData(self.vectors, self.vectorsFilename)
         
