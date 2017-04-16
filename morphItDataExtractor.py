@@ -19,6 +19,10 @@ Language, Interaction and Computation Laboratory CLIC
 
          github.com/patriziobellan86
 
+
+        Francesco Mantegna
+        ADD_EMAIL_ADDRESS
+        
 #==============================================================================
 """
 from __future__ import unicode_literals, with_statement, division

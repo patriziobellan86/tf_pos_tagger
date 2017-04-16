@@ -1,5 +1,29 @@
 # -*- coding: utf-8 -*-
 """
+                               CreateBigrams.py
+
+This module contains the class to extract and elaborate data from morphit
+
+Everything you need is not here!
+
+Vesion: 1.0-c stable
+CODE TESTED ON Python 3.5 and Python 2.7
+#==============================================================================
+Università degli studi di Trento (Tn) - Italy
+Center for Mind/Brain Sciences CIMeC
+Language, Interaction and Computation Laboratory CLIC
+
+@author: Patrizio Bellan
+         patrizio.bellan@gmail.com
+         patrizio.bellan@studenti.unitn.it
+
+         github.com/patriziobellan86
+
+
+        Francesco Mantegna
+        ADD_EMAIL_ADDRESS
+        
+#==============================================================================
 @author: Patrizio Bellan    patrizio.bellan@gmail.com
          Francesco Mantegna ADD_EMAIL_ADDRESS
          
@@ -25,9 +49,10 @@ class CreateBigrams (object):
     vectorsFilename = 'dict_vectors.pkl'
     
     def __init__(self, words=None, bidictFilename=None,
-                 validcharsFilename=None):
+                 validcharsFilename=None, vectorsFilename=None):
         self.bidictFilename = bidictFilename or self.bidictFilename 
         self.validcharsFilename = validcharsFilename or self.validcharsFilename
+        self.vectorsFilename = vectorsFilename or self.vectorsFilename
         
         # load characters for words validation
         self.validchars = [l.strip() for l in self.__LoadData(self.validcharsFilename)]
@@ -37,15 +62,13 @@ class CreateBigrams (object):
 #        print (len(self.dictBigrams))
         # if the dictionary does not exist, it is impossible to continue untill
         # we calculete it
-        if not self.dictBigrams and words:
-            # automatically start dictbigrams computation
-            self.ComputeDictBigrams(words)
-        else:
+        if self.dictBigrams:
             self.len_dict_bigrams = len(self.dictBigrams)
-        if words:
+            
+        self.vectors = self.__LoadSerializedData(self.vectorsFilename)
+        if not self.vectors & words:
             self.vectors = self.VectorizeWords(words)
             self.__SaveSerializedData(self.vectors, self.vectorsFilename)
-            
         
     def ValidateWord (self, word):
         if [False for l in word if l not in self.validchars]:
@@ -80,10 +103,10 @@ class CreateBigrams (object):
         return bigrams
 
     def ComputeDictBigrams (self, words):
-        y=self.__Words2Bigrams(words)
-        print('y',len(y))
+#        y=self.__Words2Bigrams(words)
+#        print('y',len(y))
         self.dictBigrams = self.__VectorizeDictBigrams(
-                    y)
+                    self.__Words2Bigrams(words))
         
         self.len_dict_bigrams = len(self.dictBigrams)
         
@@ -110,7 +133,10 @@ class CreateBigrams (object):
             print (n,'/',len(words),w)
             w = self.VectorizeWord(w)
             if w:
+                print ('valid', w)
                 t.update(w)
+            else:
+                print ('invalid')
         return t
         
     def VectorizeWord(self, word):
