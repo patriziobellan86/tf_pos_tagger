@@ -22,38 +22,45 @@ class CreateBigrams (object):
     end_tag='#'
     bidictFilename = 'bigramsDict.pkl'
     validcharsFilename = 'validchars'
+    vectorsFilename = 'dict_vectors.pkl'
     
-    def __init__(self, words = None, bidictFilename = 'bigramsDict.pkl',
-                 validcharsFilename = 'validchars.txt'):
+    def __init__(self, words=None, bidictFilename=None,
+                 validcharsFilename=None):
         self.bidictFilename = bidictFilename or self.bidictFilename 
         self.validcharsFilename = validcharsFilename or self.validcharsFilename
         
         # load characters for words validation
-        self.validChars = self.__LoadData(self.validcharsFilename)
-
+        self.validchars = [l.strip() for l in self.__LoadData(self.validcharsFilename)]
+        print (self.validchars)
         # try to load dictionary for valid word
         self.dictBigrams = self.__LoadSerializedData(self.bidictFilename)
-        self.len_dict_bigrams = len(self.dictBigrams)
-        
+#        print (len(self.dictBigrams))
         # if the dictionary does not exist, it is impossible to continue untill
         # we calculete it
         if not self.dictBigrams and words:
             # automatically start dictbigrams computation
             self.ComputeDictBigrams(words)
-#        
+        else:
+            self.len_dict_bigrams = len(self.dictBigrams)
+        if words:
+            self.vectors = self.VectorizeWords(words)
+            self.__SaveSerializedData(self.vectors, self.vectorsFilename)
+            
+        
     def ValidateWord (self, word):
-        if [False for l in word if l in self.validchars]:
-            return True
-        return False
+        if [False for l in word if l not in self.validchars]:
+            return False
+        return True
     
-    def Word2Bigrams (self, word):
+    def __Word2Bigrams (self, word):
         bigrams=[]
         # first char
+        if not self.ValidateWord(word):
+            return False
         try:
             bigrams.append(str(self.start_tag+word[0]))
             # main loop
             for i in range(len(word)-1):
-                
                 bigrams.append (str(word[i]+word[i+1]))
             # last char
             bigrams.append(str(word[-1]+self.end_tag))
@@ -63,26 +70,29 @@ class CreateBigrams (object):
             print ('invalid word: ', word, word[i]+word[i+1])
             return False
 
-    def Words2Bigrams (self, words):
+    def __Words2Bigrams (self, words):
         bigrams=[]
         for word in words:
-            # only valid vectorized word
-            if self.ValidateWord(word):
-                vec = self.Word2Bigrams(word)
-                if vec:
-                    bigrams.extend(vec)
+            word = word.lower()
+            vec = self.__Word2Bigrams(word)
+            if vec:
+                bigrams.extend(vec)
         return bigrams
 
     def ComputeDictBigrams (self, words):
-        self.dictBigrams = self.VectorizeDictBigrams(
-                    self.__Words2Bigrams(words))
+        y=self.__Words2Bigrams(words)
+        print('y',len(y))
+        self.dictBigrams = self.__VectorizeDictBigrams(
+                    y)
         
         self.len_dict_bigrams = len(self.dictBigrams)
         
         return self.__SaveSerializedData(self.dictBigrams, self.bidictFilename)
         
     def __VectorizeDictBigrams ( self, vectors):
-        return {bi:n for n,bi in enumerate([set(vectors)])}
+#        vec=set(vectors)
+#        vec=list(vec)
+        return {bi:n for n,bi in enumerate(list(set(vectors)))} #vec)}
 
     def VectorizeWords(self, words):
         """
@@ -94,11 +104,13 @@ class CreateBigrams (object):
         # if the dict is empty, I go and populate it
         if not self.dictBigrams:
             self.ComputeDictBigrams(words)
-            
-        t=[]
+                
+        t={}
         for n,w in enumerate(words):
             print (n,'/',len(words),w)
-            t.update(self.VectorizeWord(w))
+            w = self.VectorizeWord(w)
+            if w:
+                t.update(w)
         return t
         
     def VectorizeWord(self, word):
@@ -108,9 +120,12 @@ class CreateBigrams (object):
             Now this method:
                 return a dictionary with word as key and vector as value
         """
+        if not self.ValidateWord(word):
+            return False
         vector = np.zeros((1,self.len_dict_bigrams), dtype=np.int)
-        for bi in self.Word2Bigrams(word):
+        for bi in self.__Word2Bigrams(word):
             vector[0,self.dictBigrams[bi]] = 1
+            
         return {word:vector}
 
 #==============================================================================
@@ -164,4 +179,5 @@ if __name__ == '__main__':
     import morphItDataExtractor
     morphit = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt') 
     w2=morphit.Words()
+    print (len(w2))
     a = CreateBigrams(w2)
