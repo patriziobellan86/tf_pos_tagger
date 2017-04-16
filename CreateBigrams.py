@@ -21,9 +21,13 @@ class CreateBigrams (object):
     start_tag='#'
     end_tag='#'
     bidictFilename = 'bigramsDict.pkl'
-    validcharsFilename = 'validchars.txt'
+    validcharsFilename = 'validchars'
     
-    def __init__(self, words = None):
+    def __init__(self, words = None, bidictFilename = 'bigramsDict.pkl',
+                 validcharsFilename = 'validchars.txt'):
+        self.bidictFilename = bidictFilename or self.bidictFilename 
+        self.validcharsFilename = validcharsFilename or self.validcharsFilename
+        
         # load characters for words validation
         self.validChars = self.__LoadData(self.validcharsFilename)
 
@@ -37,17 +41,11 @@ class CreateBigrams (object):
             # automatically start dictbigrams computation
             self.ComputeDictBigrams(words)
 #        
-#        self._SaveWordsDictionary()
-#        self.dictBigrams = self.LoadDictBigrams()
-        
     def ValidateWord (self, word):
         if [False for l in word if l in self.validchars]:
             return True
         return False
-#            
-#    def FilterWords (self, words):
-#        return [w for w in words if w.isalpha()]
-
+    
     def Word2Bigrams (self, word):
         bigrams=[]
         # first char
@@ -74,16 +72,7 @@ class CreateBigrams (object):
                 if vec:
                     bigrams.extend(vec)
         return bigrams
-#    
-#    def __UniqBigrams(self, bigrams):
-#        return set(bigrams)    
-#    def UniqBigrams (self, words):
-#        bigrams = self.Words2Bigrams(words)
-#
-#        uniq = set()
-#        for bis in bigrams:
-#            uniq.add(bis)
-#        return list(uniq)
+
     def ComputeDictBigrams (self, words):
         self.dictBigrams = self.VectorizeDictBigrams(
                     self.__Words2Bigrams(words))
@@ -94,20 +83,6 @@ class CreateBigrams (object):
         
     def __VectorizeDictBigrams ( self, vectors):
         return {bi:n for n,bi in enumerate([set(vectors)])}
-
-        
-#        
-#    def DictVec (self, words):
-#        """
-#            dictBigrams lo uso per passare un eventuale stesso dict e non calcolarlo
-#        """
-#        if not self.dictBigrams:
-#            print ('creazione di dict bigrmas')
-#            dictBigrams = {bi:n for n,bi in enumerate(self.UniqBigrams(words))}
-#            self.dictBigrams = dictBigrams
-#            self.SaveDictBigrams()
-#            self.len_dict_bigrams = len(self.dictBigrams)
-#        return self.dictBigrams
 
     def VectorizeWords(self, words):
         """
@@ -120,11 +95,9 @@ class CreateBigrams (object):
         if not self.dictBigrams:
             self.ComputeDictBigrams(words)
             
-#        return [self.VectorizeWord(w) for w in words]
         t=[]
         for n,w in enumerate(words):
             print (n,'/',len(words),w)
-#            t.append(self.VectorizeWord(w))
             t.update(self.VectorizeWord(w))
         return t
         
@@ -186,85 +159,9 @@ class CreateBigrams (object):
         except:
             return False
 
-#    def _SaveWordsDictionary (self):
-#        """
-#            This method save the dictionary of bigrams for valid words
-#            
-#            this step is a must in order to fix input layer's dimension        
-#        """
-#        self.__SaveSerializedData (self.dictBigrams,self.bidictFilename)
-##        with open('dictBigrams.pkl', 'wb') as f:
-##            dill.dump(self.dictBigrams, f)
-##            print ('Bigrams dict saved')
-#
-#    def LoadDictBigrams (self):
-#        """ 
-#            This method load the dectionary bigrams for valid words
-#            
-#        """
-#        self.dictBigrams = self.__LoadSerializedData(self.bidictFilename)
-#        try:
-#            with open('dictBigrams.pkl', 'rb') as f:
-#                self.dictBigrams = dill.load(f)
-#            self.len_dict_bigrams = len(self.dictBigrams)
-#            print ('dict bigrams loaded')
-#        except:
-#            return False
-#        
-#==============================================================================
-# end new 
-#==============================================================================
-
-
-#
-#    def SaveDictBigrams (self):
-#        with open('dictBigrams.pkl', 'wb') as f:
-#            dill.dump(self.dictBigrams, f)
-#            print ('Bigrams dict saved')
-#
-#    def LoadDictBigrams (self):
-#        try:
-#            with open('dictBigrams.pkl', 'rb') as f:
-#                self.dictBigrams = dill.load(f)
-#            self.len_dict_bigrams = len(self.dictBigrams)
-#            print ('dict bigrams loaded')
-#        except:
-#            return False
-#
-#    def SaveVectorsOut (self, vectors):
-#        with open('vectorsOut.pkl', 'wb') as f:
-#            dill.dump(vectors, f)
-#            
-#    def LoadVectorsOut (self):
-#        try:
-#            with open('vectorsOut.pkl', 'rb') as f:
-#                return dill.load(f)
-#        except:
-#            return False
-#
-#    def SaveVectors (self, vectors):
-#        try:
-#            with open('vectors.pkl', 'wb') as f:
-#                dill.dump(vectors, f)
-#        except:
-#            print ("error")
-#    def LoadVectorss (self):
-#        try:
-#            with open('vectors.pkl', 'rb') as f:
-#                return dill.load(f)
-#        except:
-#            return False
-
 
 if __name__ == '__main__':
-    a = CreateBigrams()
-    txt = 'prova'
-    print (a.Word2Bigrams(txt))
-
-    txt='questa prova'.split()
-    print (a.Words2Bigrams(txt))
-    print
-    print (a.UniqBigrams(txt))
-    print ('-'*50)
-    print (a.DictVecBigrams(txt))
-    print (a.VectorizeWord('prova'))
+    import morphItDataExtractor
+    morphit = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt') 
+    w2=morphit.Words()
+    a = CreateBigrams(w2)
