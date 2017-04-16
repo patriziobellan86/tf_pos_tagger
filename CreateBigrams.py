@@ -130,13 +130,16 @@ class CreateBigrams (object):
                 
         t={}
         for n,w in enumerate(words):
-            print (n,'/',len(words),w)
-            w = self.VectorizeWord(w)
-            if w:
-                print ('valid', w)
-                t.update(w)
-            else:
-                print ('invalid')
+            try:
+                print (n,'/',len(words),w)
+                w = self.VectorizeWord(w)
+                if w:
+                    print ('valid', w)
+                    t.update(w)
+                else:
+                    print ('invalid')
+            except:
+                pass
         return t
         
     def VectorizeWord(self, word):
