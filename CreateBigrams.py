@@ -34,9 +34,10 @@ ToDo:
         
 Last change: 17/04/2017 Patrizio Bellan        
 """
-
+import pandas as pd
 import numpy as np
 import dill
+import random
 
 class CreateBigrams (object):
     """
@@ -46,7 +47,7 @@ class CreateBigrams (object):
     end_tag='#'
     bidictFilename = 'bigramsDict.pkl'
     validcharsFilename = 'validchars'
-    vectorsFilename = 'dict_vectors.pkl'
+    vectorsFilename = 'vectors.csv'
     
     def __init__(self, words=None, bidictFilename=None,
                  validcharsFilename=None, vectorsFilename=None):
@@ -68,7 +69,8 @@ class CreateBigrams (object):
         self.vectors = self.__LoadSerializedData(self.vectorsFilename)
         if not self.vectors and words:
             self.vectors = self.VectorizeWords(words)
-            self.__SaveSerializedData(self.vectors, self.vectorsFilename)
+            self.SaveCsvData(self.vectors)
+#            self.__SaveSerializedData(self.vectors, self.vectorsFilename)
         
     def ValidateWord (self, word):
         if [False for l in word if l not in self.validchars]:
@@ -128,18 +130,20 @@ class CreateBigrams (object):
         if not self.dictBigrams:
             self.ComputeDictBigrams(words)
                 
-        t={}
+#        t={}
+        t=[]
         for n,w in enumerate(words):
-            try:
-                print (n,'/',len(words),w)
-                w = self.VectorizeWord(w)
-                if w:
-                    print ('valid', w)
-                    t.update(w)
-                else:
-                    print ('invalid')
-            except:
-                pass
+#            try:
+            print (n,'/',len(words),w)
+            w = self.VectorizeWord(w)
+            if w:
+                print ('valid')
+#                    t.update(w)
+                t.append(w)
+            else:
+                print ('invalid')
+#            except:
+#                pass
         return t
         
     def VectorizeWord(self, word):
@@ -152,11 +156,15 @@ class CreateBigrams (object):
         if not self.ValidateWord(word):
             return False
         vector = np.zeros((1,self.len_dict_bigrams), dtype=np.int)
-        for bi in self.__Word2Bigrams(word):
-            vector[0,self.dictBigrams[bi]] = 1
-            
-        return {word:vector}
-
+        try:
+            for bi in self.__Word2Bigrams(word):
+                vector[0,self.dictBigrams[bi]] = 1
+                
+#            return [{'word':word, 'vector':vector.tolist()}]
+            return [word, vector.tolist()[0]]
+        except:
+            return False
+        
 #==============================================================================
 # new
 #==============================================================================
@@ -203,10 +211,77 @@ class CreateBigrams (object):
         except:
             return False
 
+    def SaveCsvData (self, vectors):
+        pd.DataFrame(vectors).to_csv(self.vectorsFilename)
 
+
+class DataCreation (object):
+    vectorsFilename = 'vectors.csv'
+    def __init__(self, dataoutput_dict, training='training.csv',
+                 test='test.csv'): 
+        self.dataoutput_dict = dataoutput_dict
+        self.outputdict = self.VectorizeDict(dataoutput_dict)
+        self.proportiontraining = 0.90
+        self.data = self.__LoadCsvDataFrame(self.vectorsFilename)
+        self.limitindex = int(len(self.data['0'])*self.proportiontraining)
+                
+#        self.indexes = self.data['0'].keys()
+        self.indexes = list(self.data['0'].keys())
+#        self.l=self.l[0]
+         
+        random.shuffle(self.indexes)
+        
+    def Save(self):
+        pd.DataFrame(self.CreateSet(self.data, 
+                            self.indexes[:self.limitindex])).to_csv(training)
+        pd.DataFrame(self.CreateSet(self.data, 
+                            self.indexes[self.limitindex:])).to_csv(test)
+        
+        
+    def VectorizeDict( self, data_dict):
+        labels = list(data_dict.values())
+        return {bi:n for n,bi in enumerate(list(set(labels)))}
+    
+    def CreateOutputVector(self,pos):
+        vector = np.zeros((1,len(self.outputdict)), dtype=np.int)
+        vector[0,self.outputdict[pos]] = 1     
+        return vector
+    
+    def __LoadCsvDataFrame (self, filename):
+        return pd.DataFrame.from_csv(filename).to_dict()
+
+#    def CreateIndexes(self, indexes):
+##        self.limitindex = int(len(self.data)*self.proportiontraining)
+#        random.shuffle(indexes)
+#        return indexes
+    
+    def CreateSet(self, data, indexes):
+        dataset = []
+        for i in indexes:
+            word = data['0'][i]
+            print (i,word)
+            
+            vector = data['1'][i]
+            pos = self.dataoutput_dict[word]
+            pos_vect = self.CreateOutputVector(pos)
+            
+            dataset.append([i, word, vector,pos,pos_vect])
+        return dataset
+    
+        
 if __name__ == '__main__':
     import morphItDataExtractor
     morphit = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt') 
-    w2=morphit.Words()
+    w2=list(morphit.Words())
+#    w2=w2[:1000]
+    w2=[w.lower() for w in w2]
     print (len(w2))
     a = CreateBigrams(w2)
+    words_dict={k.lower():v for k,v in morphit.words.iteritems()}
+    
+    d = DataCreation(words_dict)
+    print (d.outputdict)
+    print (d.indexes)
+#d = pd.DataFrame.from_csv("vectors.csv")
+#c=d.to_dict()
+#c['0'][431]    

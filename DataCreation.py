@@ -11,11 +11,15 @@ import dill
 import CreateBigrams
 import morphItDataExtractor
 import random
+import pandas as pd
 
 class DataCreation (object):
     """
     This class contains a dictionary composed by word, POS tags, output, usage, score
     """
+#    bidictFilename = 'bigramsDict.pkl'
+    vectorsFilename = 'vectors.csv'
+    
     def __init__(self): # inizializza la classe
         
         self.datafilename = 'my_data.pkl' # .pkl per i dati serializzati
@@ -101,7 +105,17 @@ class DataCreation (object):
         except:
             return False    
         #creare altre due funzioni savedicttradposs loaddicttradposs
-        
+    def LoadCsvDataFrame (self, filename):
+        return pd.DataFrame.from_csv(filename).to_dict()
+
+#d = pd.DataFrame.from_csv("vectors.csv")
+#c=d.to_dict()
+#c['0'][431]    
+
+
+
+
+    
     
 #i=1
 #for c in b:
