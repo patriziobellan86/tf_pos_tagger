@@ -231,7 +231,7 @@ class DataCreation (object):
          
         random.shuffle(self.indexes)
         
-    def Save(self):
+#    def Save(self):
         pd.DataFrame(self.CreateSet(self.data, 
                             self.indexes[:self.limitindex])).to_csv(training)
         pd.DataFrame(self.CreateSet(self.data, 
@@ -262,10 +262,12 @@ class DataCreation (object):
             print (i,word)
             
             vector = data['1'][i]
+            print (i,word, vector)
             pos = self.dataoutput_dict[word]
+            print (i,word, pos)
             pos_vect = self.CreateOutputVector(pos)
-            
-            dataset.append([i, word, vector,pos,pos_vect])
+            print (i,word, pos_vect)
+            dataset.append([i, word, vector,pos,pos_vect.tolist()[0]])
         return dataset
     
         
@@ -273,15 +275,16 @@ if __name__ == '__main__':
     import morphItDataExtractor
     morphit = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt') 
     w2=list(morphit.Words())
-#    w2=w2[:1000]
+    w2=w2[:1000]
     w2=[w.lower() for w in w2]
     print (len(w2))
     a = CreateBigrams(w2)
-    words_dict={k.lower():v for k,v in morphit.words.iteritems()}
+    words_dict={k.lower():v for k,v in morphit.words.items()}
     
     d = DataCreation(words_dict)
     print (d.outputdict)
     print (d.indexes)
+#    d.CreateSet(d.data, d.indexes)
 #d = pd.DataFrame.from_csv("vectors.csv")
 #c=d.to_dict()
 #c['0'][431]    
