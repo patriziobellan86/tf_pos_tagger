@@ -134,14 +134,15 @@ class CreateBigrams (object):
         t=[]
         for n,w in enumerate(words):
 #            try:
-            print (n,'/',len(words),w)
-            w = self.VectorizeWord(w)
-            if w:
-                print ('valid')
-#                    t.update(w)
-                t.append(w)
-            else:
-                print ('invalid')
+            if self.ValidateWord(w):
+                print (n,'/',len(words),w)
+                w = self.VectorizeWord(w)
+                if w:
+                    print ('valid')
+    #                    t.update(w)
+                    t.append(w)
+                else:
+                    print ('invalid')
 #            except:
 #                pass
         return t
@@ -153,8 +154,7 @@ class CreateBigrams (object):
             Now this method:
                 return a dictionary with word as key and vector as value
         """
-        if not self.ValidateWord(word):
-            return False
+
         vector = np.zeros((1,self.len_dict_bigrams), dtype=np.int)
         try:
             for bi in self.__Word2Bigrams(word):
