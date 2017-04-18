@@ -55,6 +55,7 @@ class CreateBigrams (object):
     bidictFilename = 'bigramsDict.pkl'
     validcharsFilename = 'validchars'
     vectorsFilename = 'vectors.csv'
+    configfile = 'configuration.ini'
     
     def __init__(self, words=None, bidictFilename=None,
                  validcharsFilename=None, vectorsFilename=None):
@@ -76,6 +77,12 @@ class CreateBigrams (object):
         if not self.vectors and words:
             self.vectors = self.VectorizeWords(words)
             self.SaveCsvData(self.vectors)
+        # Save configuration file        
+        config = ['1\n',str(self.len_dict_bigrams)]  # how many filed for every types
+        print (config)
+        with open(self.configfile, 'w') as f:
+            f.writelines(config)
+#        print (self.__SaveData(config, self.configfile))
         
     def ValidateWord (self, word):
         if [False for l in word if l not in self.validchars]:
@@ -198,14 +205,14 @@ class CreateBigrams (object):
         
     def __SaveData (self, data, filename):
         try:
-            with open(filename, 'a') as f:
+            with open(filename, 'w') as f:
                 f.writelines(data)
         except:
             return False
 
-    # deprecate
-    def __SaveCsvData (self, vectors):
-        pd.DataFrame(vectors).to_csv(self.vectorsFilename)
+#    # deprecate
+#    def __SaveCsvData (self, vectors):
+#        pd.DataFrame(vectors).to_csv(self.vectorsFilename)
 
     def SaveCsvData (self, vectors):
                     
@@ -264,8 +271,15 @@ class CreateBigrams (object):
             
 class DataCreation (object):
     vectorsFilename = 'vectors.csv'
+    configfile = 'configuration.ini'
+    
     def __init__(self, dataoutput_dict, training='training.csv',
                  test='test.csv'): 
+        # read configuration file
+        config = [x.strip() for x in self.__LoadData (self.configfile)]
+        self.config = config
+        
+# TODO        
         self.dataoutput_dict = dataoutput_dict
         self.outputdict = self.VectorizeDict(dataoutput_dict)
         self.proportiontraining = 0.90
@@ -279,11 +293,17 @@ class DataCreation (object):
         testData = self.CreateSet(self.data, 
                             self.indexes[self.limitindex:])
         
-        self.tr = trainingData
-        self.te = testData
+#        self.tr = trainingData
+#        self.te = testData
 #       Save dataset as separated csv files
         self.SaveCsvData(trainingData, training)
         self.SaveCsvData(testData, test)
+        # update config file
+# TODO
+#        config.extend(['\n1\n',str(len(self.outputdict))])
+        self.__SaveData (['\n1\n',str(len(self.outputdict))], self.configfile) # how many filed for every types
+        # so , e.g. the configuration.ini has 1 for word, 366 for bigrams input 1 for output label and 23 for output vector
+        
         
     def VectorizeDict( self, data_dict):
         labels = list(data_dict.values())
@@ -360,7 +380,21 @@ class DataCreation (object):
             dat.extend([w for w in pos_vect[0]])
             dataset.append(dat)#([word, [w for w in vector],pos,[w for w in pos_vect[0]]])
         return dataset
-            
+          
+    def __LoadData (self, filename):
+        try:
+            with open (filename, 'r') as f:
+                return f.readlines()
+        except:
+            return False
+
+    def __SaveData (self, data, filename):
+        try:
+            with open(filename, 'a') as f:
+                f.writelines(data)
+        except:
+            return False
+        
 if __name__ == '__main__':
     import morphItDataExtractor
     morphit = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt') 
