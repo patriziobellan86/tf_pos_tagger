@@ -8,20 +8,20 @@ Project: https://github.com/aymericdamien/TensorFlow-Examples/
 
 from __future__ import print_function
 
-# Import MNIST data
-#from tensorflow.examples.tutorials.mnist import input_data
-#mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
-
 import tensorflow as tf
+import pandas as pd
 
+# TODO
 
+# load data from dataset and create wrapper functions for batching
 
+# input and output dimensions are read from dataset
 
-import CreateBigrams
-import morphItDataExtractor
+training = 'training.csv'
+test = 'test.csv'
 
-
-
+training = pd.DataFrame.from_csv(training).to_dict()
+test = pd.DataFrame.from_csv(test).to_dict()
 
 
 # Parameters
