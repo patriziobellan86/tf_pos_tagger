@@ -234,28 +234,28 @@ class CreateBigrams (object):
             
 #            print ('l',l)
             writer.writerow(l)
-    # deprecate           
-    def ReadCsvDataVector (self):
-                    
-        """
-            CSV CreateBigrams
-            
-            1° line are headers
-            
-            Word, all bigrams
-            
-        """ 
-        vectors = []
-        
-        infile  = open(self.vectorsFilename, "r")
-        reader = csv.reader(infile, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
-        headers = False
-        for row in reader:
-            if not headers:
-                headers = row
-            else:
-                vectors.append(row)
-        return vectors
+#    # deprecate           
+#    def ReadCsvDataVector (self):
+#                    
+#        """
+#            CSV CreateBigrams
+#            
+#            1° line are headers
+#            
+#            Word, all bigrams
+#            
+#        """ 
+#        vectors = []
+#        
+#        infile  = open(self.vectorsFilename, "r")
+#        reader = csv.reader(infile, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
+#        headers = False
+#        for row in reader:
+#            if not headers:
+#                headers = row
+#            else:
+#                vectors.append(row)
+#        return vectors
 
 
 
@@ -270,18 +270,20 @@ class DataCreation (object):
         self.outputdict = self.VectorizeDict(dataoutput_dict)
         self.proportiontraining = 0.90
         self.data = self.LoadCsvDataFrame(self.vectorsFilename)
-        # !!!! decide how to manage data and which format use
-        # change code below
-        self.limitindex = int(len(self.data['0'])*self.proportiontraining)
-                
-        self.indexes = list(self.data['0'].keys())
+        self.limitindex = int(len(self.data)*self.proportiontraining)               
+        self.indexes = list(self.data.keys())
         random.shuffle(self.indexes)
+#       Dataset creation 
+        trainingData = self.CreateSet(self.data, 
+                            self.indexes[:self.limitindex])
+        testData = self.CreateSet(self.data, 
+                            self.indexes[self.limitindex:])
         
-        pd.DataFrame(self.CreateSet(self.data, 
-                            self.indexes[:self.limitindex])).to_csv(training)
-        pd.DataFrame(self.CreateSet(self.data, 
-                            self.indexes[self.limitindex:])).to_csv(test)
-        
+        self.tr = trainingData
+        self.te = testData
+#       Save dataset as separated csv files
+        self.SaveCsvData(trainingData, training)
+        self.SaveCsvData(testData, test)
         
     def VectorizeDict( self, data_dict):
         labels = list(data_dict.values())
@@ -292,10 +294,34 @@ class DataCreation (object):
         vector[0,self.outputdict[pos]] = 1     
         return vector
     
-    # deprecate
-    def _LoadCsvDataFrame (self, filename):
-        return pd.DataFrame.from_csv(filename).to_dict()
+#    # deprecate
+#    def _LoadCsvDataFrame (self, filename):
+#        return pd.DataFrame.from_csv(filename).to_dict()
     
+    def SaveCsvData (self, vectors, filename):
+                    
+        """
+            CSV CreateBigrams
+            
+            1° line are headers
+            
+            Word, all bigrams
+            
+        """ 
+        outfile  = open(filename, "w")
+        writer = csv.writer(outfile, delimiter=';', quotechar='"', 
+                            quoting=csv.QUOTE_NONNUMERIC)
+        
+# TODO        # write headers       
+#        line = ['word']
+#        line.extend([w for w in self.dictBigrams.keys()])
+#        writer.writerow(line)
+        for l in vectors:
+#            l = [k]#vectors[k]   [line[0]]
+#            l.extend([w for w in vectors[k]])
+#            l.extend()
+            writer.writerow(l)
+            
     def LoadCsvDataFrame (self, filename):
                     
         """
@@ -306,7 +332,7 @@ class DataCreation (object):
             Word, all bigrams
             
         """ 
-        vectors = []
+        vectors = {}
         
         infile  = open(filename, "r")
         reader = csv.reader(infile, delimiter=';', quoting=csv.QUOTE_NONNUMERIC)
@@ -315,19 +341,24 @@ class DataCreation (object):
             if not headers:
                 headers = row
             else:
-                vectors.append(row)
+                vectors[row[0]] = row[1:]
+#                vectors.append(row)  # [0] word, [1:] input vector
         return vectors
-
 
     def CreateSet(self, data, indexes):
         dataset = []
         for i in indexes:
-            word = data['0'][i]
-            vector = data['1'][i]
+            # for each words I append pos and output vector
+            word = i
+            vector = data[i][1:]
             pos = self.dataoutput_dict[word]
             pos_vect = self.CreateOutputVector(pos)
-            print (i,word, pos_vect)
-            dataset.append([i, word, vector,pos,pos_vect.tolist()[0]])
+#            print (i,word, pos_vect
+            dat = [word]
+            dat.extend([w for w in vector])
+            dat.extend([pos])
+            dat.extend([w for w in pos_vect[0]])
+            dataset.append(dat)#([word, [w for w in vector],pos,[w for w in pos_vect[0]]])
         return dataset
             
 if __name__ == '__main__':
