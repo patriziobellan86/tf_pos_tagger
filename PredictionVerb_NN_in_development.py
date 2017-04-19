@@ -57,6 +57,55 @@ training = LoadCsvDataFrame(training)
 test = LoadCsvDataFrame(test)
 
 
+
+
+def FeaturesExtractor (word):
+    f1 = word[-1]   # last character
+    f2 = word[-2:] # last 2 char
+    f3 = word[-3:]
+    f4 = word[0]
+    f5 = word[:1]
+    f6 = word[:2]
+    
+    return {'f1':f1,'f2':f2,'f3':f3,'f4':f4,'f5':f5,'f6':f6}
+
+w='mangiavo'
+print (FeaturesExtractor(w))
+
+
+
+
+
+
+
+
+import nltk
+featuresets = [(FeaturesExtractor(w),training[w]['outLabel'] ) for w in training.keys()]
+train_set, test_set = featuresets[500:], featuresets[:500]
+classifier = nltk.NaiveBayesClassifier.train(train_set)
+
+#>>> classifier.classify(FeaturesExtractor('mangiavo'))
+#'VER'
+#>>> classifier.classify(FeaturesExtractor('mangiavamo'))
+#'VER'
+#>>> classifier.classify(FeaturesExtractor('mangiai'))
+#'ADJ'
+#>>> classifier.classify(FeaturesExtractor('mangiai'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Parameters
 learning_rate = 0.001
 training_epochs = 15
