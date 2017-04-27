@@ -77,9 +77,6 @@ with tf.Session() as sess:
     for epoch in range(training_epochs):
         avg_cost = 0.
 
-
-
-
         total_batch = int(mnist.train.num_examples/batch_size)
         # Loop over all batches
         for i in range(total_batch):

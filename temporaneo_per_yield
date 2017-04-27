@@ -13,11 +13,15 @@ class yeld_data:
     def yeld(self):
         for i in self.a:
             yield i
-        
+    
+b = yeld_data()        
+c=b.yeld()
 if __name__ == '__main__':
     b = yeld_data()
-#    
-#    while True:
-#        print (b.yeld())
+
+d=c
+
+print(d)
+print(c)
 for i in b.yeld():
     print (i)
