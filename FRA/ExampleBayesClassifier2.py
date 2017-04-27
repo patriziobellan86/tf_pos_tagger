@@ -25,6 +25,18 @@ import sklearn
 
 import pandas as pd
 
+
+
+
+def nVowels (word):
+    vowels='a e i o u'.split()
+    nvowels = 0
+    
+    for i in range(len(word)):
+        if word[i] in vowels:
+            nvowels += 1 
+    return nvowels
+    
 # TODO
 
 # load data from dataset and create wrapper functions for batching
@@ -75,6 +87,9 @@ def FeaturesExtractor (word):
     f4 = word[0]
     f5 = word[:2]
     f6 = word[:3]
+    f7 = nVowels(word) #voc 
+    f8 = len(word) # length
+    f9 = f8 - f7  #conson
     
     return {'finale':f1,'finale-2':f2,'suffisso':f3,'iniziale':f4,'iniziale-2':f5,'prefisso':f6}
 
