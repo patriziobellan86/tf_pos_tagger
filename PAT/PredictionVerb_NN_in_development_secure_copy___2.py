@@ -14,24 +14,16 @@ import numpy as np
 
 from tensorflow.python.framework import dtypes
 
-
-# TODO
-
-# load data from dataset and create wrapper functions for batching
-
-# input and output dimensions are read from dataset
-
 training = 'training.csv'
 test = 'test.csv'
 configuration = 'configuration.ini'
-
 
 model_path = "model.ckpt"
 
 # Parameters
 learning_rate = 0.001
 training_epochs = 15
-batch_size = 10 # 100
+batch_size = 1# # 100
 display_step = 1
 
 class DataSet(object):
@@ -65,10 +57,11 @@ class DataSet(object):
 #            a = np.asarray(a) 
 #            print (a.shape)
             a = [np.array(x, dtype=np.float32) for x in data[k]['inputVector']]
-
+            assert(len(a)==364)
             self.input.append(tf.constant(a))
+            
             a = [np.array(x, dtype=np.float32) for x in data[k]['outputVector']]
-      
+            assert(len(a)==23)
             self.input.append(tf.constant(a))            
             
             self.input.append(tf.constant(a))
@@ -108,7 +101,7 @@ def LoadCsvDataFrame (filename):
             
         return vectors 
 
-a=LoadCsvDataFrame(test)
+#a=LoadCsvDataFrame(test)
 
 
 # ATTENTION!!1 LOST ONE CELL AND I DO NOT UNDERSTAND WHERE! INPUT VECTOR LEN < DI 1
@@ -132,7 +125,6 @@ n_classes = 23#config[-1] #10 # MNIST total classes (0-9 digits)
 # tf Graph input
 x = tf.placeholder("float", shape=(None, n_input))
 y = tf.placeholder("float", shape=(None, n_classes))
-
 
 # Create model
 def multilayer_perceptron(x, weights, biases):
@@ -202,16 +194,9 @@ with tf.Session() as sess:
     # Calculate accuracy
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     
-    
-    # provare ffinon a qui e poi vedere come fare l'accuracy
-#    print("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
-
-
-
 # 'Saver' op to save and restore all the variables
 saver = tf.train.Saver()
   
-
 # Save model weights to disk
 save_path = saver.save(sess, model_path)
 print("Model saved")
