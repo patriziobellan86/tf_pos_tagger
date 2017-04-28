@@ -33,43 +33,22 @@ class DataSet(object):
         self.input = []
         self.output =[]
         for k in data.keys():
-#            print (len(np.array(data[k]['inputVector'])))
-##            self.input.append (np.array(data[k]['inputVector']).flat)
-#            self.input.append(tf.constant(data[k]['inputVector'], shape=[0, 364]))
-##            print (len(data[k]['inputVector']) == 364)
-##            self.output.append(np.array(data[k]['outputVector']).flat)
-#            self.output.append(tf.constant(data[k]['outputVector'], shape=[0,23]))
-            #
-#            self.input.append (np.ndarray(data[k]['inputVector']))
-#            self.output.append(np.ndarray(data[k]['outputVector']))
-
-#            self.input.append(data[k]['inputVector'])
-#            self.output.append(data[k]['outputVector'])
-
-#   
-#            a = [float(w) for w in data[k]['inputVector']]
+            a = [float(w) for w in data[k]['inputVector']]
 #            a = np.asarray(a) 
-#            print (a.shape)
-#            a.reshape(1,364)
-#            self.input.append(tf.constant(a))
-#            
-#            a = [float(w) for w in data[k]['outputVector']]
-#            a = np.asarray(a) 
-#            print (a.shape)
-            a = [np.array(x, dtype=np.float32) for x in data[k]['inputVector']]
+#            a.reshape(364,1)
             assert(len(a)==364)
-            self.input.append(tf.constant(a))
+            self.input.append(a)#tf.constant(a))
             
-            a = [np.array(x, dtype=np.float32) for x in data[k]['outputVector']]
+#            a = [np.array(x, dtype=np.float32) for x in data[k]['outputVector']]
+            a = [float(w) for w in data[k]['outputVector']]
+#            a = np.asarray(a) 
+#            a.reshape(23,1)
             assert(len(a)==23)
-            self.input.append(tf.constant(a))            
+            self.output.append(a)#tf.constant(a))            
+
+        self.input = np.array(self.input)
+        self.output = np.array(self.output)
             
-            self.input.append(tf.constant(a))
-            
-#            print (type(data[k]['outputVector']), len(data[k]['outputVector']),(data[k]['outputVector']) )
-#            self.input.append(tf.constant([float(w) for w in data[k]['inputVector']], dtype=dtypes.float32 , shape=(0,364), verify_shape=True))
-#            self.output.append(tf.constant([float(w) for w in data[k]['outputVector']], dtype=dtypes.float32 , shape=(0,23), verify_shape=True))
-#                        
         self._index_in_epoch = 0
 
     def next_batch(self, batch_size):
@@ -100,9 +79,6 @@ def LoadCsvDataFrame (filename):
             vectors[row[0]] = {'inputVector': ReadInput(row), 'outputVector':ReadOutput(row), 'outLabel': row[config[1]]}
             
         return vectors 
-
-#a=LoadCsvDataFrame(test)
-
 
 # ATTENTION!!1 LOST ONE CELL AND I DO NOT UNDERSTAND WHERE! INPUT VECTOR LEN < DI 1
 
@@ -160,6 +136,11 @@ optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 # Initializing the variables
 init = tf.global_variables_initializer()
 
+
+
+correct_pred = tf.equal(tf.argmax(pred,1),tf.argmax(y,1))
+accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+
 #tf.SparseTensorValue
 ## continuare da qui con funztione che gestiste batching
 ## Launch the graph
@@ -179,7 +160,9 @@ with tf.Session() as sess:
 #            batch_y, batch_x = training.next_batch(batch_size)
             # Run optimization op (backprop) and cost op (to get loss value)
             feed_dict={x: batch_x, y: batch_y}
-            
+                        
+#            c = sess.run(accuracy, feed_dict=feed_dict)
+#            c = sess.run(optimizer, feed_dict)
             _, c = sess.run([optimizer, cost], feed_dict)#={x: batch_x, y: batch_y})
             # Compute average loss
             avg_cost += c / total_batch
@@ -193,10 +176,11 @@ with tf.Session() as sess:
     correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
     # Calculate accuracy
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-    
-# 'Saver' op to save and restore all the variables
-saver = tf.train.Saver()
-  
-# Save model weights to disk
-save_path = saver.save(sess, model_path)
-print("Model saved")
+        
+    # 'Saver' op to save and restore all the variables
+    saver = tf.train.Saver()
+      
+    # Save model weights to disk
+    save_path = saver.save(sess, model_path)
+    print("Model saved")
+
