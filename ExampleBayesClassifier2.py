@@ -76,6 +76,7 @@ def FeaturesExtractor (word):
     f5 = word[:2]
     f6 = word[:3]
     
+    
     return {'finale':f1,'finale-2':f2,'suffisso':f3,'iniziale':f4,'iniziale-2':f5,'prefisso':f6}
 
 w='mangiavo'
@@ -156,6 +157,7 @@ from sklearn.feature_extraction import DictVectorizer
 # from sklearn.feature_selection import chi2
 from sklearn.feature_selection import SelectFromModel
 from sklearn.linear_model import MultiTaskLassoCV
+
 vec = DictVectorizer()
 pos_vectorized = vec.fit_transform(featuresets)
 X =  pos_vectorized.toarray()
@@ -164,7 +166,9 @@ lpostags = [({'postags':training[w]['outLabel']}) for w in training.keys()]
 tpos_vectorized =  vec.fit_transform(lpostags)
 Y =  tpos_vectorized.toarray()
 print(Y)
-fnames = vec.get_feature_names()
+feature_names = vec.get_feature_names()
+print(feature_names)
+y=Y[:,6]
 #X.shape
 #X_new = SelectKBest(chi2, k=2).fit_transform(X, Y)
 #X_new.shape
@@ -179,10 +183,10 @@ n_features = sfm.transform(X).shape[1]
 # Reset the threshold till the number of features equals two.
 # Note that the attribute can be set directly instead of repeatedly
 # fitting the metatransformer.
-while n_features > 2:
-    sfm.threshold += 0.1
-    X_transform = sfm.transform(X)
-    n_features = X_transform.shape[1]
+#while n_features > 2:
+#    sfm.threshold += 0.1
+X_transform = sfm.transform(X)
+#    n_features = X_transform.shape[1]
 
 # Plot the selected two features from X.
 plt.title(
@@ -196,6 +200,43 @@ plt.ylabel("Feature number 2")
 plt.ylim([np.min(feature2), np.max(feature2)])
 plt.show()
 
+from sklearn.decomposition import PCA
+
+n_components = 2
+
+pca = PCA(n_components=n_components)
+pca.fit(X)
+X_pca = pca.fit_transform(X)
+n_samples, n_features = X_pca.shape
+
+from sklearn.decomposition import TruncatedSVD
+
+svd = TruncatedSVD(n_components=n_components)
+svd.fit(X) 
+print(svd.explained_variance_ratio_) 
+print(svd.explained_variance_ratio_.sum())
+X_svd = svd.fit_transform(X) 
+
+plt.figure(figsize=(9, 5))
+plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y)
+#plt.plot(X_pca[0:int(len(X_pca)/2),0],X_pca[0:int(len(X_pca)/2),1], 'o', markersize=7, color='blue', alpha=0.5, label='class1')
+#plt.plot(X_pca[(int(len(X_pca)/2)+1):len(X_pca)-1,0], X_pca[(int(len(X_pca)/2)+1):len(X_pca)-1,1], '^', markersize=7, color='red', alpha=0.5, label='class2')
+# Percentage of variance explained for each components
+
+print('explained variance ratio (first two components): %s'
+      % str(pca.explained_variance_ratio_))
+
+plt.figure(figsize=(9, 5))
+plt.scatter(X_svd[:, 0], X_svd[:, 1])
+
+plt.figure()
+plt.plot(pca.explained_variance_, linewidth=2)
+plt.axis('tight')
+plt.xlabel('n_components')
+plt.ylabel('explained_variance_')
+plt.legend(loc='best', shadow=False, scatterpoints=1)
+plt.title('PCA of MorphIt dataset')
+
 
 # if one extracts such a context around each individual word of a corpus of documents
 # the resulting matrix will be very wide (many one-hot-features) with most of them being
@@ -208,16 +249,3 @@ plt.show()
 #dpostags = [({'postags':training[w]['outLabel']}) for w in training.keys()]
 #Y = v.fit_transform(dpostags)
 #print(Y)
-
-from sklearn.linear_model import LinearRegression
-#X = ftable.drop('postags', axis=1)
-#counter = 0
-#for w in training:
-#   training[w].update({'counter':counter})
-#   counter += 1
-#postags=[[training[w]['counter'],training[w]['outLabel']] for w in training.keys()]
-#postags=np.ravel(postags)
-LinearRegression.fit(X,Y,sample_weight=None)
-print ('Estimated intercept coefficent:', LinearRegression.intercept_)
-print ('Number of coefficients:', len(LinearRegression.coef_))
-plt.scatter(X,Y)
