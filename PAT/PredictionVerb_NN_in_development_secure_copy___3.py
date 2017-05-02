@@ -93,8 +93,8 @@ test = DataSet(test)
 
 
 # Network Parameters
-n_hidden_1 = 256 # 1st layer number of features
-n_hidden_2 = 256 # 2nd layer number of features
+n_hidden_1 = 500 # 1st layer number of features
+n_hidden_2 = 125 # 2nd layer number of features
 n_input = 364#config[1]# 784 # MNIST data input (img shape: 28*28)
 n_classes = 23#config[-1] #10 # MNIST total classes (0-9 digits)
 
@@ -127,17 +127,16 @@ biases = {
 }
 
 # Construct model
-pred = multilayer_perceptron(x, weights, biases)
+#pred = multilayer_perceptron(x, weights, biases)
+# NEW
+pred = tf.nn.sigmoid(multilayer_perceptron(x, weights, biases))
+
 
 # Define loss and optimizer
 #tf_cross_entropy = -tf.reduce_sum(tf_softmax_correct*tf.log(tf_softmax  + 1e-50))
 #cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y)+ 1e-50)
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
-
-# Initializing the variables
-init = tf.global_variables_initializer()
-
 
 
 correct_pred = tf.equal(tf.argmax(pred,1),tf.argmax(y,1))
@@ -146,49 +145,88 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 #tf.SparseTensorValue
 ## continuare da qui con funztione che gestiste batching
 ## Launch the graph
-with tf.Session() as sess:
-    sess.run(init)
+#with tf.Session() as sess:
 
-    # Training cycle
-    for epoch in range(training_epochs):
-        print(epoch)
-        
-        avg_cost = 0.
-        print('total batch', total_batch)
-        # Loop over all batches
-        for i in range(total_batch-1):
+# Initializing the variables
+init = tf.global_variables_initializer()
+
+
+sess = tf.Session()    
+sess.run(init)
+
+# Training cycle
+for epoch in range(training_epochs):
+    print(epoch)
+    
+    avg_cost = 0.
+    print('total batch', total_batch)
+    # Loop over all batches
+    for i in range(total_batch-1):
 #            input_fn=lambda: my_input_fn(test_set)
-            batch_x, batch_y = training.next_batch(batch_size)
+        batch_x, batch_y = training.next_batch(batch_size)
 #            batch_y, batch_x = training.next_batch(batch_size)
-            # Run optimization op (backprop) and cost op (to get loss value)
-            feed_dict={x: batch_x, y: batch_y}
-                        
+        # Run optimization op (backprop) and cost op (to get loss value)
+        feed_dict={x: batch_x, y: batch_y}
+                    
 #            c = sess.run(accuracy, feed_dict=feed_dict)
 #            c = sess.run(optimizer, feed_dict)
-            _, c = sess.run([optimizer, cost], feed_dict)#={x: batch_x, y: batch_y})
-            
-#            print(_)
-            print ('c',c)
-            print ('c/tbatch',c / total_batch)
-            print ('abg', avg_cost)
-            # Compute average loss
-            avg_cost += c / total_batch
-        # Display logs per epoch step
-        if epoch % display_step == 0:
-            print("Epoch:", '%04d' % (epoch+1), "cost=", \
-                "{:.9f}".format(avg_cost))
-    print("Optimization Finished!")
-
-    # Test model
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-    # Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+        _, c = sess.run([optimizer, cost], feed_dict)#={x: batch_x, y: batch_y})
         
-    # 'Saver' op to save and restore all the variables
-    saver = tf.train.Saver()
-      
-    # Save model weights to disk
-    save_path = saver.save(sess, model_path)
-    print("Model saved")
+#            print(_)
+        print ('c',c)
+        print ('c/tbatch',c / total_batch)
+        print ('abg', avg_cost)
+        # Compute average loss
+        avg_cost += c / total_batch
+    # Display logs per epoch step
+    if epoch % display_step == 0:
+        print("Epoch:", '%04d' % (epoch+1), "cost=", \
+            "{:.9f}".format(avg_cost))
+print("Optimization Finished!")
 
-#prediction tf.argmax(y,1)
+# Test model
+correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+# Calculate accuracy
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    
+# 'Saver' op to save and restore all the variables
+saver = tf.train.Saver()
+  
+# Save model weights to disk
+save_path = saver.save(sess, model_path)
+print("Model saved")
+
+
+
+
+#==============================================================================
+# controllare e sistemare da qquiì
+#==============================================================================
+
+correct_predictions = tf.equal(tf.argmax(predictions, 1), tf.cast(labels, tf.int64))
+accuracy_op = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+
+
+
+accuracy = sess.run([accuracy_op], feed_dict={x_placeholder:x, y_placeholder:y})
+
+
+
+
+#==============================================================================
+# # MAKE PREDICTIONS
+#==============================================================================
+
+batch_x, batch_y = test.next_batch(1)
+
+# Run optimization op (backprop) and cost op (to get loss value)
+feed_dict={x: batch_x}#, y: batch_y}
+#print (feed_dict)
+#classification = sess.run(y, feed_dict)
+#print (classification)
+
+predictions = sess.run(pred, feed_dict=feed_dict)
+
+
+prediction=tf.argmax(y,1)
+print (predictions)
