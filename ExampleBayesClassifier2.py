@@ -155,8 +155,6 @@ print(ftable.head)
 from sklearn.feature_extraction import DictVectorizer
 # from sklearn.feature_selection import SelectKBest
 # from sklearn.feature_selection import chi2
-from sklearn.feature_selection import SelectFromModel
-from sklearn.linear_model import MultiTaskLassoCV
 
 vec = DictVectorizer()
 pos_vectorized = vec.fit_transform(featuresets)
@@ -168,37 +166,37 @@ Y =  tpos_vectorized.toarray()
 print(Y)
 feature_names = vec.get_feature_names()
 print(feature_names)
-y=Y[:,6]
+y=Y[:,5]
 #X.shape
 #X_new = SelectKBest(chi2, k=2).fit_transform(X, Y)
 #X_new.shape
 #print(X_new.shape)
 
 # We use the base estimator LassoCV since the L1 norm promotes sparsity of features.
-clf = MultiTaskLassoCV()
+#clf = MultiTaskLassoCV()
 # Set a minimum threshold of 0.25
-sfm = SelectFromModel(clf, threshold=0.25)
-sfm.fit(X, Y) # takes a long time
-n_features = sfm.transform(X).shape[1]
+#sfm = SelectFromModel(clf, threshold=0.25)
+#sfm.fit(X, Y) # takes a long time
+#n_features = sfm.transform(X).shape[1]
 # Reset the threshold till the number of features equals two.
 # Note that the attribute can be set directly instead of repeatedly
 # fitting the metatransformer.
 #while n_features > 2:
 #    sfm.threshold += 0.1
-X_transform = sfm.transform(X)
+#X_transform = sfm.transform(X)
 #    n_features = X_transform.shape[1]
 
 # Plot the selected two features from X.
-plt.title(
-    "Features selected from MorphIt using SelectFromModel with "
-    "threshold %0.3f." % sfm.threshold)
-feature1 = X_transform[:, 0]
-feature2 = X_transform[:, 1]
-plt.plot(feature1, feature2, 'r.')
-plt.xlabel("Feature number 1")
-plt.ylabel("Feature number 2")
-plt.ylim([np.min(feature2), np.max(feature2)])
-plt.show()
+#plt.title(
+#    "Features selected from MorphIt using SelectFromModel with "
+#    "threshold %0.3f." % sfm.threshold)
+#feature1 = X_transform[:, 0]
+#feature2 = X_transform[:, 1]
+#plt.plot(feature1, feature2, 'r.')
+#plt.xlabel("Feature number 1")
+#plt.ylabel("Feature number 2")
+#plt.ylim([np.min(feature2), np.max(feature2)])
+#plt.show()
 
 from sklearn.decomposition import PCA
 
@@ -209,6 +207,14 @@ pca.fit(X)
 X_pca = pca.fit_transform(X)
 n_samples, n_features = X_pca.shape
 
+#first we need to map colors on labels
+featuresetscolor = pd.DataFrame([['setosa','red'],['versicolor','blue'],['virginica','yellow']],columns=['Species','Color'])
+mergedfeaturesets = pd.merge(ftable,featuresetscolor)
+
+#Then we do the graph
+plt.scatter(X_pca[:,0],X_pca[:,1],color=mergedfeaturesets['Color'])
+plt.show()
+
 from sklearn.decomposition import TruncatedSVD
 
 svd = TruncatedSVD(n_components=n_components)
@@ -217,8 +223,39 @@ print(svd.explained_variance_ratio_)
 print(svd.explained_variance_ratio_.sum())
 X_svd = svd.fit_transform(X) 
 
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import SVC
+
+def plot_hyperplane(clf, min_x, max_x, linestyle, label):
+    # get the separating hyperplane
+    w = clf.coef_[0]
+    a = -w[0] / w[1]
+    xx = np.linspace(min_x - 5, max_x + 5)  # make sure the line is long enough
+    yy = a * xx - (clf.intercept_[0]) / w[1]
+    plt.plot(xx, yy, linestyle, label=label)
+
+classif = OneVsRestClassifier(SVC(kernel='linear'))
+classif.fit(X, Y)
+
 plt.figure(figsize=(9, 5))
-plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y)
+zero_class = np.where(X_pca[:, 0])
+one_class = np.where(X_pca[:, 1])
+min_x = np.min(X_pca[:, 0])
+max_x = np.max(X_pca[:, 0])
+min_y = np.min(X_pca[:, 1])
+max_y = np.max(X_pca[:, 1])
+plt.scatter(X_pca[:, 0], X_pca[:, 1], s=40, c='gray')
+plt.scatter(X[zero_class, 0], X[zero_class, 1], s=160, edgecolors='b',
+               facecolors='none', linewidths=2, label='Class 1')
+plt.scatter(X[one_class, 0], X[one_class, 1], s=80, edgecolors='orange',
+               facecolors='none', linewidths=2, label='Class 2')
+plot_hyperplane(classif.estimators_[0], min_x, max_x, 'k--',
+                    'Boundary\nfor class 1')
+plot_hyperplane(classif.estimators_[1], min_x, max_x, 'k-.',
+                    'Boundary\nfor class 2')
+plt.xticks(())
+plt.yticks(())
+
 #plt.plot(X_pca[0:int(len(X_pca)/2),0],X_pca[0:int(len(X_pca)/2),1], 'o', markersize=7, color='blue', alpha=0.5, label='class1')
 #plt.plot(X_pca[(int(len(X_pca)/2)+1):len(X_pca)-1,0], X_pca[(int(len(X_pca)/2)+1):len(X_pca)-1,1], '^', markersize=7, color='red', alpha=0.5, label='class2')
 # Percentage of variance explained for each components
@@ -226,8 +263,23 @@ plt.scatter(X_pca[:, 0], X_pca[:, 1], c=y)
 print('explained variance ratio (first two components): %s'
       % str(pca.explained_variance_ratio_))
 
+#color_marker = [(c, m) for c in "rgbc" for m in "123"] #assuming there are 12 types of pizza
+#for cm, i, y in zip(color_marker, range(7), feature_names):
+#    plt.scatter(X_pca[: , 0], X_pca[:, 1], c=cm[0], marker=cm[1], label=feature_names)
+#plt.ylim([-0.4166,-0.4170])
+#plt.xlim([0.722, 0.723])
+#plt.show()
+
 plt.figure(figsize=(9, 5))
 plt.scatter(X_svd[:, 0], X_svd[:, 1])
+
+from sklearn.cross_decomposition import CCA
+cca = CCA(n_components=1)
+cca.fit(X, y)
+X_c, y_c = cca.transform(X, y)
+
+plt.figure(figsize=(9, 5))
+plt.scatter(X_c[:,0], y_c, c=y)
 
 plt.figure()
 plt.plot(pca.explained_variance_, linewidth=2)
@@ -236,6 +288,29 @@ plt.xlabel('n_components')
 plt.ylabel('explained_variance_')
 plt.legend(loc='best', shadow=False, scatterpoints=1)
 plt.title('PCA of MorphIt dataset')
+
+from sklearn import svm
+h = .02  # step size in the mesh
+C = 1.0  # SVM regularization parameter
+clf = svm.SVC(kernel='poly', degree=3, C=C)
+clf.fit(X, y)
+# create a mesh to plot in
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                     np.arange(y_min, y_max, h))
+Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+# Put the result into a color plot
+Z = Z.reshape(xx.shape)
+plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.8)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.coolwarm)
+plt.xlabel('Sepal length')
+plt.ylabel('Sepal width')
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.xticks(())
+plt.yticks(())
+plt.title('SVM for linguistic features')
 
 
 # if one extracts such a context around each individual word of a corpus of documents
