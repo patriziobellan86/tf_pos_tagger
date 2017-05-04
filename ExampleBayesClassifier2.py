@@ -208,12 +208,12 @@ X_pca = pca.fit_transform(X)
 n_samples, n_features = X_pca.shape
 
 #first we need to map colors on labels
-featuresetscolor = pd.DataFrame([['setosa','red'],['versicolor','blue'],['virginica','yellow']],columns=['Species','Color'])
-mergedfeaturesets = pd.merge(ftable,featuresetscolor)
+#featuresetscolor = pd.DataFrame([['setosa','red'],['versicolor','blue'],['virginica','yellow']],columns=['Species','Color'])
+#mergedfeaturesets = pd.merge(ftable,featuresetscolor)
 
 #Then we do the graph
-plt.scatter(X_pca[:,0],X_pca[:,1],color=mergedfeaturesets['Color'])
-plt.show()
+#plt.scatter(X_pca[:,0],X_pca[:,1],color=mergedfeaturesets['Color'])
+#plt.show()
 
 from sklearn.decomposition import TruncatedSVD
 
