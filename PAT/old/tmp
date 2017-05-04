@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May  2 16:32:35 2017
+
+@author: patrizio
+"""
+
+import pyConTextNLP as cntx
+
+for i in range(5): # for i=1:5
+    print (i)
+    if i > 3:
+        print ('mag')
+    if i<2:
+        print ('min')
+    
+# il nome del tuo file     
+filename ='/home/patrizio/inputFile'
+    
+# metodo 1 per leggere
+with open(filename, 'r') as f:
+    lines = f.readlines()
+print(lines)
+
+# metodo 2 per leggere
+f = open(filename, 'r')
+lines2 = f.readlines()
+f.close()
+
+print (lines2)
+
+# lunghezza
+print (len(lines))
+# leggo solo la prima riga
+riga0 = lines[0]
+print (riga0)
+# toke izzo
+tok = riga0.split()
+print (len(tok))
+print (tok)
+
+
+    
+        
