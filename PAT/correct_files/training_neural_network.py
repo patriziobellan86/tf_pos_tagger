@@ -1,6 +1,9 @@
 #!/opt/python/bin/python3
 
-
+#==============================================================================
+# aggiungere accuracy sugli stessi dati usati nella epoch dopo ogni epoch to check that 
+# there is no overfitting 
+#==============================================================================
 from __future__ import print_function
 
 
@@ -14,8 +17,6 @@ import matplotlib.pyplot as plt
 from tensorflow.python.framework import dtypes
 
 from Word2Vec import Word2Bigrams, Pos2Vec
-
-
 
 
 w2v = Word2Bigrams()
@@ -34,9 +35,9 @@ testDim = 0.2
 validDim = 0.1
 
 # Training Parameters
-learning_rate = 0.001
-training_epochs = 50
-batch_size = 50
+learning_rate = 0.05 #0.001
+training_epochs = 50 #80
+batch_size = 100#50
 display_step = 1
 
 # Network Parameters
@@ -48,7 +49,7 @@ n_classes = len(p2v.posdict)
 # optimazer params
 beta1=0.9
 beta2=0.999
-epsilon=1e-08
+epsilon=1e-02 #1e-08
 
 
 class DataSet:
@@ -172,6 +173,9 @@ init = tf.global_variables_initializer()
 sess = tf.Session()    
 sess.run(init)
 
+
+totalLoss = 0
+totalAcc = 0
 # Training cycle
 lines=[]     # store lines for plot
 linesvalidate = []
@@ -205,6 +209,9 @@ for epoch in range(training_epochs):
     lines.append(dataplot)
 
     train.reset_epoch()
+    
+totalLoss= avg_cost
+
 
 plt.plot(lines)
 plt.show()
@@ -226,69 +233,93 @@ print("Optimization Finished!")
 #accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
     
 # 'Saver' op to save and restore all the variables
-saver = tf.train.Saver()
-  
-# Save model weights to disk
-save_path = saver.save(sess, 'model'+model_ext)
-print("Model saved")
+#saver = tf.train.Saver()
+#  
+## Save model weights to disk
+#save_path = saver.save(sess, 'model'+model_ext)
+#print("Model saved")
 
 
 batch_x, batch_y = test.next_batch(len(test.word))
 feed_dict={x: batch_x, y: batch_y}
-         
-print('accuracy', accuracy.eval(feed_dict=feed_dict, session=sess))    
+acc =  accuracy.eval(feed_dict=feed_dict, session=sess)         
+print('accuracy',acc)    
+totalAcc = acc
 
+print ('loss', totalLoss,'accuracy', totalAcc)
 #==============================================================================
 # # MAKE PREDICTIONS
 #==============================================================================
-print ('prediction')
-
-tot = 0
-true = 0
-validate.reset_epoch()
-
-batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
-
-feed_dict={x: batch_x}
-# make a single prediction
-predictions = sess.run(pred, feed_dict=feed_dict)
-#    prediction=tf.argmax(y,1)
-print (predictions)
-p=predictions.tolist()
-p=p[0]
-posPredicted = p2v.PosFromIndex(p.index(max(p)))
-print (posPredicted)
-print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
-tot += 1
-
-if posWord == posPredicted:
-    true += 1
-for i in range(len(validate.word)-5):
-    batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
-    
-    feed_dict={x: batch_x}
-    
-    predictions = sess.run(pred, feed_dict=feed_dict)
-#    prediction=tf.argmax(y,1)
-    print (predictions)
-    p=predictions.tolist()
-    p=p[0]
-    posPredicted = p2v.PosFromIndex(p.index(max(p)))
-    print (posPredicted)
-    print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
-
-    tot += 1
-    if posWord == posPredicted:
-        true += 1
-        
-print (true / tot)
-print ('End')
-
-
-
-
-
+#print ('prediction')
 #
+#tot = 0
+#true = 0
+#validate.reset_epoch()
+#
+#batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
+#
+#feed_dict={x: batch_x}
+## make a single prediction
+#predictions = sess.run(pred, feed_dict=feed_dict)
+##    prediction=tf.argmax(y,1)
+#print (predictions)
+#p=predictions.tolist()
+#p=p[0]
+#posPredicted = p2v.PosFromIndex(p.index(max(p)))
+#print (posPredicted)
+#print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
+#tot += 1
+#
+#if posWord == posPredicted:
+#    true += 1
+#for i in range(len(validate.word)-5):
+#    batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
+#    
+#    feed_dict={x: batch_x}
+#    
+#    predictions = sess.run(pred, feed_dict=feed_dict)
+##    prediction=tf.argmax(y,1)
+#    print (predictions)
+#    p=predictions.tolist()
+#    p=p[0]
+#    posPredicted = p2v.PosFromIndex(p.index(max(p)))
+#    print (posPredicted)
+#    print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
+#
+#    tot += 1
+#    if posWord[0] == posPredicted:
+#        true += 1
+#        
+#print (true / tot)
+#print ('End')
+#
+
+
+
+
+
+
+
+
+
+
+
+
+#def MakePrediction(word, vec, session):
+#    feed_dict={x: vec}    
+#    predictions = session.run(pred, feed_dict=feed_dict)
+#    p=predictions.tolist()
+#    p=p[0]
+#    posPredicted = p2v.PosFromIndex(p.index(max(p)))
+#    return posPredicted
+#
+#
+#word = 'xenia'
+#vec = w2v.Word2Vec(word)
+#vec = np.array(vec)
+#print (MakePrediction(word,vec,sess))
+#
+##
 #
 ## find predictions on val set
 #    pred_temp = tf.equal(tf.argmax(output_layer, 1), tf.argmax(y, 1))
