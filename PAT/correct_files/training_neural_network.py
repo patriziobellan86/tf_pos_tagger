@@ -246,8 +246,25 @@ print ('prediction')
 tot = 0
 true = 0
 validate.reset_epoch()
-for i in range(len(validate.word)):
-    batch_x, batch_y, word, posWord = test.next_batch_extended(1)
+
+batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
+
+feed_dict={x: batch_x}
+# make a single prediction
+predictions = sess.run(pred, feed_dict=feed_dict)
+#    prediction=tf.argmax(y,1)
+print (predictions)
+p=predictions.tolist()
+p=p[0]
+posPredicted = p2v.PosFromIndex(p.index(max(p)))
+print (posPredicted)
+print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
+tot += 1
+
+if posWord == posPredicted:
+    true += 1
+for i in range(len(validate.word)-5):
+    batch_x, batch_y, word, posWord = validate.next_batch_extended(1)
     
     feed_dict={x: batch_x}
     
@@ -258,10 +275,25 @@ for i in range(len(validate.word)):
     p=p[0]
     posPredicted = p2v.PosFromIndex(p.index(max(p)))
     print (posPredicted)
-    print ('prediction correct: ', posWord == posPredicted)
+    print ('prediction for word',word,posWord, 'correct: ', posWord[0] == posPredicted)
+
     tot += 1
     if posWord == posPredicted:
         true += 1
         
 print (true / tot)
 print ('End')
+
+
+
+
+
+#
+#
+## find predictions on val set
+#    pred_temp = tf.equal(tf.argmax(output_layer, 1), tf.argmax(y, 1))
+#    accuracy = tf.reduce_mean(tf.cast(pred_temp, "float"))
+#    print "Validation Accuracy:", accuracy.eval({x: val_x.reshape(-1, input_num_units), y: dense_to_one_hot(val_y)})
+#    
+#    predict = tf.argmax(output_layer, 1)
+#    pred = predict.eval({x: test_x.reshape(-1, input_num_units)})
