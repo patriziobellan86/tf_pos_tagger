@@ -46,7 +46,7 @@ p2v = Pos2Vec()
 #words = p2v.words.keys()
 words = [w for w in p2v.words.keys() if w2v._ValidateWord(w)]
 # restricting set size
-words = words[:150000]
+#words = words[:150000]
 
 random.shuffle(words)
 trainDim = int(trainDim*len(words))
@@ -61,11 +61,7 @@ classifier = nltk.NaiveBayesClassifier.train(train_set)
 print('Bayes accuracy', nltk.classify.accuracy(classifier, test_set))
 
 #classifier.classify(gender_features('Neo'))
-classifier.show_most_informative_features(15)
-#
-#from nltk.classify import apply_features
-#train_set = apply_features(gender_features, labeled_names[500:])
-#test_set = apply_features(gender_features, labeled_names[:500])
+classifier.show_most_informative_features(150)
 
 # decision tree
 print ('decision tree')
@@ -73,8 +69,8 @@ classifier = nltk.DecisionTreeClassifier.train(train_set)
 print ('decision tree accuracy:',nltk.classify.accuracy(classifier, test_set))
 
 #classifier.classify(pos_features('cats'))
-print ('decision tree classifier pseudocode with depth = 4')
-print(classifier.pseudocode(depth=4))
+#print ('decision tree classifier pseudocode with depth = 4')
+classifier.pseudocode(depth=4)
 
 
 #print ('decision tree classifier pseudocode with depth = 15')
@@ -85,76 +81,13 @@ print(classifier.pseudocode(depth=4))
 
 # example linear regression from nltk
 from nltk.classify.scikitlearn import SklearnClassifier
-from nltk.classify.util import names_demo, names_demo_features
+#from nltk.classify.util import names_demo, names_demo_features
 from sklearn.linear_model import LogisticRegression
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 
 #http://www.nltk.org/howto/classify.html
 
 #http://www.nltk.org/_modules/nltk/classify/util.html#names_demo_features
-
-def names_demo_features(name):
-    features = {}
-    features['alwayson'] = True
-    features['startswith'] = name[0].lower()
-    features['endswith'] = name[-1].lower()
-    for letter in 'abcdefghijklmnopqrstuvwxyz':
-        features['count(%s)' % letter] = name.lower().count(letter)
-        features['has(%s)' % letter] = letter in name.lower()
-    return features
-
-
-
-def names_demo(trainer, features=names_demo_features):
-    from nltk.corpus import names
-    import random
-
-    # Construct a list of classified names, using the names corpus.
-    namelist = ([(name, 'male') for name in names.words('male.txt')] +
-                [(name, 'female') for name in names.words('female.txt')])
-
-    # Randomly split the names into a test & train set.
-    random.seed(123456)
-    random.shuffle(namelist)
-    train = namelist[:5000]
-    test = namelist[5000:5500]
-
-    # Train up a classifier.
-    print('Training classifier...')
-    classifier = trainer( [(features(n), g) for (n, g) in train] )
-
-    # Run the classifier on the test data.
-    print('Testing classifier...')
-    acc = accuracy(classifier, [(features(n), g) for (n, g) in test])
-    print('Accuracy: %6.4f' % acc)
-
-    # For classifiers that can find probabilities, show the log
-    # likelihood and some sample probability distributions.
-    try:
-        test_featuresets = [features(n) for (n, g) in test]
-        pdists = classifier.prob_classify_many(test_featuresets)
-        ll = [pdist.logprob(gold)
-              for ((name, gold), pdist) in zip(test, pdists)]
-        print('Avg. log likelihood: %6.4f' % (sum(ll) / len(test)))
-        print()
-        print('Unseen Names      P(Male)  P(Female)\n'+'-'*40)
-        for ((name, gender), pdist) in list(zip(test, pdists))[:5]:
-            if gender == 'male':
-                fmt = '  %-15s *%6.4f   %6.4f'
-            else:
-                fmt = '  %-15s  %6.4f  *%6.4f'
-            print(fmt % (name, pdist.prob('male'), pdist.prob('female')))
-    except NotImplementedError:
-        pass
-
-    # Return the classifier
-    return classifier
-
-
-
-
-
-
 
 
 def accuracy(classifier, gold):
@@ -188,20 +121,21 @@ def My_classifier_linear_regression(trainer, features=FeaturesExtractor, data=No
     try:
         test_featuresets = [features(n) for (n, g) in test]
         pdists = classifier.prob_classify_many(test_featuresets)
-        ll = [pdist.logprob(gold)
-              for ((name, gold), pdist) in zip(test, pdists)]
-        print('Avg. log likelihood: %6.4f' % (sum(ll) / len(test)))
-        print()
-#==============================================================================
-#         change this 
-#==============================================================================
-        print('Unseen Names      P(Male)  P(Female)\n'+'-'*40)
-        for ((name, gender), pdist) in list(zip(test, pdists))[:5]:
-            if gender == 'male':
-                fmt = '  %-15s *%6.4f   %6.4f'
-            else:
-                fmt = '  %-15s  %6.4f  *%6.4f'
-            print(fmt % (name, pdist.prob('male'), pdist.prob('female')))
+#        ll = [pdist.logprob(gold)
+#              for ((name, gold), pdist) in zip(test, pdists)]
+#        print('Avg. log likelihood: %6.4f' % (sum(ll) / len(test)))
+#        print()
+##==============================================================================
+##         change this 
+##==============================================================================
+#        print('Unseen Names      P(Male)  P(Female)\n'+'-'*40)
+#        for ((name, gender), pdist) in list(zip(test, pdists))[:5]:
+#            if gender == 'male':
+#                fmt = '  %-15s *%6.4f   %6.4f'
+#            else:
+#                fmt = '  %-15s  %6.4f  *%6.4f'
+#            print(fmt % (name, pdist.prob('male'), pdist.prob('female')))
+        return test, pdists
     except NotImplementedError:
         pass
 
@@ -210,27 +144,32 @@ def My_classifier_linear_regression(trainer, features=FeaturesExtractor, data=No
 
 words = [w for w in p2v.words.keys() if w2v._ValidateWord(w)]
 random.shuffle(words)
-words = words[:15000]
+#words = words[:15000]
 
 data = [(w, p2v.words[w]) for w in words]
 
-My_classifier_linear_regression(
-        SklearnClassifier(LogisticRegression(C=1000)).train, 
+for c in [1, 10, 100, 1000, 10000]:
+    print ('Logistic Regression', c)
+    test_svm, pdists_svm = My_classifier_linear_regression(
+            SklearnClassifier(LogisticRegression(C=c)).train, 
+            features=FeaturesExtractor, data=data)
+        
+
+print ('BernoulliNB binarize = False')
+test_bern, pdists_bern = My_classifier_linear_regression(
+        SklearnClassifier(BernoulliNB(binarize=False)).train, 
+        features=FeaturesExtractor, data=data)
+
+
+print ('BernoulliNB binarize = True')
+test_bern, pdists_bern = My_classifier_linear_regression(
+        SklearnClassifier(BernoulliNB(binarize=True)).train, 
+        features=FeaturesExtractor, data=data)
+
+
+print ('MultinomialNB')
+test_multiNB, pdists_multiNB = My_classifier_linear_regression(
+        SklearnClassifier(MultinomialNB()).train, 
         features=FeaturesExtractor, data=data)
     
 
-
-
-
-
-# Bernoulli Naive Bayes is designed for binary classification. We set the
-# binarize option to False since we know we're passing boolean features.
-print("scikit-learn Naive Bayes:")
-names_demo(SklearnClassifier(BernoulliNB(binarize=False)).train,
-           features=names_demo_features)
-
-# The C parameter on logistic regression (MaxEnt) controls regularization.
-# The higher it's set, the less regularized the classifier is.
-print("\n\nscikit-learn logistic regression:")
-names_demo(SklearnClassifier(LogisticRegression(C=1000)).train,
-           features=names_demo_features)
