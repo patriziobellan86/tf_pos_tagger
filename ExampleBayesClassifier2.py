@@ -212,7 +212,7 @@ n_samples, n_features = X_pca.shape
 #mergedfeaturesets = pd.merge(ftable,featuresetscolor)
 
 #Then we do the graph
-#plt.scatter(X_pca[:,0],X_pca[:,1],color=mergedfeaturesets['Color'])
+plt.scatter(X_pca[:,0],X_pca[:,1],c=y)
 #plt.show()
 
 from sklearn.decomposition import TruncatedSVD
@@ -293,10 +293,10 @@ from sklearn import svm
 h = .02  # step size in the mesh
 C = 1.0  # SVM regularization parameter
 clf = svm.SVC(kernel='poly', degree=3, C=C)
-clf.fit(X, y)
+clf.fit(X_pca, y)
 # create a mesh to plot in
-x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
-y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+x_min, x_max = X_pca[:, 0].min() - 1, X_pca[:, 0].max() + 1
+y_min, y_max = X_pca[:, 1].min() - 1, X_pca[:, 1].max() + 1
 xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
                      np.arange(y_min, y_max, h))
 Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
