@@ -154,6 +154,75 @@ def names_demo(trainer, features=names_demo_features):
 
 
 
+
+
+
+def accuracy(classifier, gold):
+    results = classifier.classify_many([fs for (fs, l) in gold])
+    correct = [l == r for ((fs, l), r) in zip(gold, results)]
+    if correct:
+        return sum(correct) / len(correct)
+    else:
+        return 0
+    
+def My_classifier_linear_regression(trainer, features=FeaturesExtractor, data=None, trainDim=0.8):
+    """
+        data is a list with a pair (word, tag) for each items
+    """
+    # Construct a list of classified names, using the names corpus.
+    trainDim = int(len(data)*trainDim)
+    train = data[:trainDim]
+    test = data[trainDim:]
+
+    # Train up a classifier.
+    print('Training classifier...')
+    classifier = trainer( [(features(n), g) for (n, g) in train] )
+
+    # Run the classifier on the test data.
+    print('Testing classifier...')
+    acc = accuracy(classifier, [(features(n), g) for (n, g) in test])
+    print('Accuracy: %6.4f' % acc)
+
+    # For classifiers that can find probabilities, show the log
+    # likelihood and some sample probability distributions.
+    try:
+        test_featuresets = [features(n) for (n, g) in test]
+        pdists = classifier.prob_classify_many(test_featuresets)
+        ll = [pdist.logprob(gold)
+              for ((name, gold), pdist) in zip(test, pdists)]
+        print('Avg. log likelihood: %6.4f' % (sum(ll) / len(test)))
+        print()
+#==============================================================================
+#         change this 
+#==============================================================================
+        print('Unseen Names      P(Male)  P(Female)\n'+'-'*40)
+        for ((name, gender), pdist) in list(zip(test, pdists))[:5]:
+            if gender == 'male':
+                fmt = '  %-15s *%6.4f   %6.4f'
+            else:
+                fmt = '  %-15s  %6.4f  *%6.4f'
+            print(fmt % (name, pdist.prob('male'), pdist.prob('female')))
+    except NotImplementedError:
+        pass
+
+    # Return the classifier
+    return classifier
+
+words = [w for w in p2v.words.keys() if w2v._ValidateWord(w)]
+random.shuffle(words)
+words = words[:15000]
+
+data = [(w, p2v.words[w]) for w in words]
+
+My_classifier_linear_regression(
+        SklearnClassifier(LogisticRegression(C=1000)).train, 
+        features=FeaturesExtractor, data=data)
+    
+
+
+
+
+
 # Bernoulli Naive Bayes is designed for binary classification. We set the
 # binarize option to False since we know we're passing boolean features.
 print("scikit-learn Naive Bayes:")
