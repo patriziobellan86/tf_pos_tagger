@@ -80,8 +80,11 @@ class Word2Bigrams (VectorizeBigrams):
 
 # pos tag taken from morphit
 class Pos2Vec:
-    def __init__(self):
-        self.words = morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt').words
+    def __init__(self, words=None):
+        """
+            words is a dict in the form {word:pos_tag}
+        """
+        self.words = words or morphItDataExtractor.MorphItDataExtractor('morphitUtf8.txt').words
         self._Pos2Dict()
         
     def _Pos2Dict (self):

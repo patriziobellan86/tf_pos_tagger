@@ -37,12 +37,12 @@ validDim = 0.1
 # Training Parameters
 learning_rate = 0.05 #0.001
 training_epochs = 50 #80
-batch_size = 100#50
-display_step = 1
+batch_size = 50
+display_step = 10
 
 # Network Parameters
-n_hidden_1 = 500#50 # 1st layer number of features
-n_hidden_2 = 250#500 # 2nd layer number of features
+n_hidden_1 = 250# 500#50 # 1st layer number of features
+n_hidden_2 = 125#250#500 # 2nd layer number of features
 n_input = len(w2v.bidict)
 n_classes = len(p2v.posdict)
 
@@ -66,7 +66,7 @@ class DataSet:
         self.pos = []   # store the pos of the word
         
         for w in words:
-            print ('dataset element: ',w)
+#            print ('dataset element: ',w)
             vec = w2v.Word2Vec(w)
             # check if it is a valid word
             if vec:
@@ -199,12 +199,9 @@ for epoch in range(training_epochs):
     if epoch % display_step == 0:
         print("Epoch:", '%04d' % (epoch+1), "cost=", \
             "{:.9f}".format(avg_cost))
-        
-        batch_x, batch_y = validate.next_batch(10)
-        feed_dict={x: batch_x, y: batch_y}
-        acc = accuracy.eval(feed_dict=feed_dict, session=sess)
-        linesvalidate.append(acc)         
-        print('accuracy epoch', acc)    
+    acc = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
+    linesvalidate.append(acc)         
+    print('accuracy epoch', acc)    
 
     lines.append(dataplot)
 
@@ -245,8 +242,20 @@ feed_dict={x: batch_x, y: batch_y}
 acc =  accuracy.eval(feed_dict=feed_dict, session=sess)         
 print('accuracy',acc)    
 totalAcc = acc
+trainacc = sum(linesvalidate)/len(linesvalidate)
+print ('loss', totalLoss,'accuracy', totalAcc, 'training accuracy',trainacc)
+print ('training acc - acc: ', acc - trainacc)
 
-print ('loss', totalLoss,'accuracy', totalAcc)
+import csv
+
+outfile  = open('result_h2.csv', "a")
+writer = csv.writer(outfile, delimiter=';', quotechar='"')
+# write headers
+line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,0,
+        n_input,n_classes,beta1,beta2,epsilon,
+        totalLoss,totalAcc,trainacc,acc-trainacc]
+writer.writerow(line)
+outfile.close()
 #==============================================================================
 # # MAKE PREDICTIONS
 #==============================================================================
