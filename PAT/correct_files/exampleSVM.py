@@ -23,6 +23,7 @@ Created on Thu May  4 14:32:51 2017
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import svm, datasets
+
 # import some data to play with
 #iris = datasets.load_iris()
 #X = iris.data[:, :2] # we only take the first two features. We could
@@ -146,6 +147,7 @@ n_components = 2
 from sklearn.decomposition import TruncatedSVD
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
 
 svd = TruncatedSVD(n_components=n_components)
 svd.fit(X) 
@@ -268,7 +270,6 @@ x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
 y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
 h = (x_max / x_min)/100
 xx, yy = np.meshgrid(np.arange(x_min, x_max, h),np.arange(y_min, y_max, h))
-plt.subplot(1, 1, 1)
 Z = classif.predict(np.c_[xx.ravel(), yy.ravel()])
 Z = Z.reshape(xx.shape)
 maccuracy = classif.score(X, y) 	#Returns the mean accuracy on the given test data and labels.
@@ -284,53 +285,105 @@ plt.title(s)
 plt.gcf().set_size_inches(xSize,ySize)
 plt.gcf().savefig(s,dpi=xSize*6) # dovrebbe essere dpi=xSize/xPix ma va in errore, così funziona       
 
-
+       
+       
 # Nei prossimi giorni vorrei provare a fare un multiclass classifier assegnando diversi colori
 # alle diverse features come fanno in questi links http://scikit-learn.org/stable/modules/multiclass.html
 # http://scikit-learn.org/stable/auto_examples/plot_multilabel.html#sphx-glr-auto-examples-plot-multilabel-py 
 
-#def plot_hyperplane(clf, min_x, max_x, linestyle, label):
-#    # get the separating hyperplane
-#    w = clf.coef_[0]
-#    a = -w[0] / w[1]
-#    xx = np.linspace(min_x - 5, max_x + 5)  # make sure the line is long enough
-#    yy = a * xx - (clf.intercept_[0]) / w[1]
-#    plt.plot(xx, yy, linestyle, label=label)
+#questa funzione definisce l'iperpiano
+def plot_hyperplane(clf, min_x, max_x, linestyle, label):
+    # get the separating hyperplane
+    w = clf.coef_[0]
+    a = -w[0] / w[1]
+    xx = np.linspace(min_x - 5, max_x + 5)  # make sure the line is long enough
+    yy = a * xx - (clf.intercept_[0]) / w[1]
+    plt.plot(xx, yy, linestyle, label=label)
 
-#zero_class = np.where(Y[1])
-#one_class = np.where(Y[2])
-#two_class = np.where(Y[7])
-#three_class = np.where(Y[10])
-#four_class = np.where(Y[13])
-#five_class = np.where(Y[20])
-#plt.scatter(X[:, 0], X[:, 1], s=40, c='gray')
-#plt.scatter(X[zero_class, 0], X[zero_class, 1], s=160, edgecolors='b',
-#           facecolors='none', linewidths=2, label='Class 1')
-#plt.scatter(X[one_class, 0], X[one_class, 1], s=80, edgecolors='orange',
-#           facecolors='none', linewidths=2, label='Class 2')
-#plt.scatter(X[two_class, 0], X[two_class, 1], s=80, edgecolors='orange',
-#           facecolors='none', linewidths=2, label='Class 3')
-#plt.scatter(X[three_class, 0], X[three_class, 1], s=80, edgecolors='orange',
-#           facecolors='none', linewidths=2, label='Class 4')
-#plt.scatter(X[four_class, 0], X[four_class, 1], s=80, edgecolors='orange',
-#           facecolors='none', linewidths=2, label='Class 5')
-#plt.scatter(X[five_class, 0], X[five_class, 1], s=80, edgecolors='orange',
-#           facecolors='none', linewidths=2, label='Class 6')
-#
-#min_x = np.min(X[:, 0])
-#max_x = np.max(X[:, 0])
-#
-#min_y = np.min(X[:, 1])
-#max_y = np.max(X[:, 1])
-#
-#plot_hyperplane(classif.estimators_[0], min_x, max_x, 'k--',
-#                'Boundary\nfor class 1')
-#plot_hyperplane(classif.estimators_[1], min_x, max_x, 'k-.',
-#                'Boundary\nfor class 2')
+# qui creo una lista per ogni classe (POS) nel nostro training set
+A=[]
+for i in range(len(Y)):
+    if Y[i]==1:
+     A.append(1)
+    else:
+     A.append(0)
+     
+B=[]
+for i in range(len(Y)):
+    if Y[i]==2:
+     B.append(1)
+    else:
+     B.append(0)
+     
+C=[]
+for i in range(len(Y)):
+    if Y[i]==7:
+     C.append(1)
+    else:
+     C.append(0)
+     
+D=[]
+for i in range(len(Y)):
+    if Y[i]==10:
+     D.append(1)
+    else:
+     D.append(0)
+     
+E=[]
+for i in range(len(Y)):
+    if Y[i]==1:
+     E.append(13)
+    else:
+     E.append(0)
+     
+F=[]
+for i in range(len(Y)):
+    if Y[i]==1:
+     F.append(20)
+    else:
+     F.append(0)
 
-#plt.xticks(())
-#plt.yticks(())
-#plt.legend()
-#plt.colorbar()
-#plt.show()  
+# qui creo una tupla con le posizioni dei rispettivi POS     
+zero_class = np.where(A)
+one_class = np.where(B)
+two_class = np.where(C)
+three_class = np.where(D)
+four_class = np.where(E)
+five_class = np.where(F)
+#qui faccio un plot per tutti i dati
+plt.scatter(X[:, 0], X[:, 1], s=640, c='gray')
+#qui faccio un plot per ciascuna delle classi nel training set
+plt.scatter(X[zero_class, 0], X[zero_class, 1], s=320, edgecolors='b',
+           facecolors='none', linewidths=2, label='Class 1')
+plt.scatter(X[one_class, 0], X[one_class, 1], s=240, edgecolors='orange',
+           facecolors='none', linewidths=2, label='Class 2')
+plt.scatter(X[two_class, 0], X[two_class, 1], s=160, edgecolors='green',
+           facecolors='none', linewidths=2, label='Class 3')
+plt.scatter(X[three_class, 0], X[three_class, 1], s=80, edgecolors='red',
+           facecolors='none', linewidths=2, label='Class 4')
+plt.scatter(X[four_class, 0], X[four_class, 1], s=40, edgecolors='purple',
+           facecolors='none', linewidths=2, label='Class 5')
+plt.scatter(X[five_class, 0], X[five_class, 1], s=20, edgecolors='yellow',
+           facecolors='none', linewidths=2, label='Class 6')
 
+min_x = np.min(X[:, 0])
+max_x = np.max(X[:, 0])
+
+min_y = np.min(X[:, 1])
+max_y = np.max(X[:, 1])
+
+classif = OneVsRestClassifier(SVC(kernel='linear'))
+classif.fit(X, Y)
+
+
+plot_hyperplane(classif.estimators_[0], min_x, max_x, 'k--',
+                'Boundary\nfor class 1')
+plot_hyperplane(classif.estimators_[1], min_x, max_x, 'k-.',
+                'Boundary\nfor class 2')
+
+plt.xticks(())
+plt.yticks(())
+plt.legend()
+plt.show()  
+
+#però il grafico esce su una linea non so per quale motivo
