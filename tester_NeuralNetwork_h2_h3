@@ -19,14 +19,15 @@ Language, Interaction and Computation Laboratory CLIC
 
 from __future__ import print_function
 
-
+import csv
 import random
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sys
+
 from Word2Vec import Word2Bigrams, Pos2Vec
-import csv
 
 w2v = Word2Bigrams()
 p2v = Pos2Vec()
@@ -60,82 +61,41 @@ beta2=0.999
 epsilon=1e-02 #1e-08
 
 
+def CreateFigure(s, trainAcc,testAcc, loss, folder):
+    # accuracy figure
+    plt.figure()
+    # plot style preferences
+    plt.style.use('ggplot')       
+    plt.plot(trainAcc, 'b-', label='training accuracy',linewidth=1.0)
+    plt.plot(testAcc, 'm-', label='test accuracy',linewidth=1.0)
+    plt.xlabel('epochs')
+    plt.ylabel('accuracy value')
+    plt.ylim(0, 1.1)
+    plt.title(s)
+    # add legend
+    plt.legend(loc='best')
+    # Save Figure
+    plt.savefig(folder+'accuracy_'+s+'.jpeg',dpi=150,format='jpeg', bbox_inches="tight")
+
+    # loss figure
+    plt.figure()
+    plt.style.use('ggplot')   
+    plt.plot(loss, 'r-',linewidth=0.1)
+    plt.xlabel('epochs')
+    plt.ylabel('average loss')
+    plt.title(s)
+    # Save Figure
+    plt.savefig(folder+'loss_'+s+'.jpeg',dpi=150,format='jpeg', bbox_inches="tight")
+
+
+
 def SaveResults (filename, data):
-    outfile  = open('result_h2.csv', "a")
-    writer = csv.writer(filename, delimiter=';', quotechar='"')
+    outfile  = open(filename, "a")
+    writer = csv.writer(outfile, delimiter=';', quotechar='"')
     # write headers
     writer.writerow(data)
+    writer.writerow('\n')
     outfile.close()
-
-
-class DataSet:
-    def __init__(self, words):
-
-        w2v = Word2Bigrams()
-        p2v = Pos2Vec()
-        
-        self._index_in_epoch = 0
-        
-        self.input = [] # store the input vector
-        self.output =[] # store the output vector
-        self.word = []  # store the word
-        self.pos = []   # store the pos of the word
-        
-        for w in words:
-#            print ('dataset element: ',w)
-            vec = w2v.Word2Vec(w)
-            # check if it is a valid word
-            if vec:
-                self.input.append(vec)
-                pos = p2v.words[w]
-                self.output.append(p2v.Pos2Vec(pos))
-                self.word.append(w)
-                self.pos.append(pos)
-                
-        self.input = np.array(self.input)
-        self.output = np.array(self.output)
-    
-    def reset_epoch (self):
-        self._index_in_epoch = 0
-        
-    def next_batch(self, batch_size):
-        """Return the next `batch_size` examples from this data set."""
-        start = self._index_in_epoch
-        self._index_in_epoch += batch_size
-        end = self._index_in_epoch
-        return self.input[start:end], self.output[start:end]
-
-    def next_batch_extended(self, batch_size):
-        """Return the next `batch_size` examples from this data set."""
-        start = self._index_in_epoch
-        self._index_in_epoch += batch_size
-        end = self._index_in_epoch
-        return self.input[start:end], self.output[start:end], self.word[start:end], self.pos[start:end]
-
-
-# words for feeding the nn
-words = list(p2v.words.keys())
-
-# testing, only the first 5000 words
-words = words[:5000]
-
-random.shuffle(words)
-
-# dataset dimension
-trainDim = int(trainDim*len(words))   
-testDim = int(testDim*len(words))
-validDim = int(validDim*len(words))    
-# words lists    
-train = words[-trainDim:]    
-test = words[:testDim]
-validate = words[testDim:trainDim]    
-# dataset creation    
-train = DataSet(train)
-test = DataSet(test)
-validate = DataSet(validate)
-
-# total batch
-total_batch = int(len(train.word)/batch_size)
 
 #==============================================================================
 def TestingNNs():
@@ -155,6 +115,7 @@ def TestingNNs():
                                    n_input,n_classes,beta1,beta2,epsilon,
                                    'h3')
                                 
+                                break
 #==============================================================================
 # H2
 #==============================================================================
@@ -239,7 +200,7 @@ def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden
                 "{:.9f}".format(avg_cost))
         acc = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
         linesvalidate.append(acc)         
-        print('accuracy epoch', acc)    
+        print('accuracy epoch',(epoch+1),':', acc)    
     
         lines.append(dataplot)
     
@@ -256,11 +217,11 @@ def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden
     plt.show()  
      
     print("Optimization Finished!")
-    
-    saver = tf.train.Saver()
-    # Save model weights to disk
-    save_path = saver.save(sess, 'model'+model_ext)
-    print("Model saved")
+#    
+#    saver = tf.train.Saver()
+#    # Save model weights to disk
+#    save_path = saver.save(sess, 'model'+model_ext)
+#    print("Model saved")
     
     batch_x, batch_y = test.next_batch(len(test.word))
     feed_dict={x: batch_x, y: batch_y}
@@ -271,11 +232,22 @@ def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden
     print ('loss', totalLoss,'accuracy', totalAcc, 'training accuracy',trainacc)
     print ('training acc - acc: ', acc - trainacc)
     
+    # num2str in scientific notation
+    epsilon = '%.3e' % epsilon
+    # composing stringName
+    s = filename+'h1_'+str(n_hidden_1)+'h2_'+str(n_hidden_2)+'h3_'+str(n_hidden3)+ \
+        'learnRate_'+str(learning_rate)+'epochs_'+str(training_epochs)+ \
+        'batchs_'+str(batch_size)+'b1_'+str(beta1)+'b2_'+str(beta2)+'ep_'+str(epsilon)
+        
+    totalAcc = [totalAcc for i in range(len(linesvalidate))]
+    
+#    def CreateFigure(s, trainAcc,testAcc, loss, folder):
+    CreateFigure(s, linesvalidate,totalAcc, lines, folder)
     
     line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,0,
                 n_input,n_classes,beta1,beta2,epsilon,
                 totalLoss,totalAcc,trainacc,acc-trainacc]
-    SaveResults(filename+'.csv', line)
+    SaveResults(folder+filename+'.csv', line)
     
 
 #==============================================================================
@@ -369,7 +341,7 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
                 "{:.9f}".format(avg_cost))        
         acc = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
         linesvalidate.append(acc)         
-        print('accuracy epoch', acc)    
+        print('accuracy epoch',(epoch+1),':', acc)    
     
         lines.append(dataplot)
     
@@ -387,10 +359,10 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
      
     print("Optimization Finished!")
     
-    saver = tf.train.Saver()
-    # Save model weights to disk
-    save_path = saver.save(sess, 'model'+model_ext)
-    print("Model saved")
+#    saver = tf.train.Saver()
+#    # Save model weights to disk
+#    save_path = saver.save(sess, 'model'+model_ext)
+#    print("Model saved")
     
     # Test model    
     batch_x, batch_y = test.next_batch(len(test.word))
@@ -401,9 +373,95 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
     trainacc = sum(linesvalidate)/len(linesvalidate)
     print ('loss', totalLoss,'accuracy', totalAcc, 'training accuracy',trainacc)
     print ('training acc - acc: ', acc - trainacc)
+        # num2str in scientific notation
+    epsilon = '%.3e' % epsilon
+    # composing stringName
+    s = filename+'h1_'+str(n_hidden_1)+'h2_'+str(n_hidden_2)+'h3_'+str(n_hidden3)+ \
+        'learnRate_'+str(learning_rate)+'epochs_'+str(training_epochs)+ \
+        'batchs_'+str(batch_size)+'b1_'+str(beta1)+'b2_'+str(beta2)+'ep_'+str(epsilon)
+        
+    totalAcc = [totalAcc for i in range(len(linesvalidate))]
+    
+#    def CreateFigure(s, trainAcc,testAcc, loss, folder):
+    CreateFigure(s, linesvalidate,totalAcc, lines, folder)
     
     line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden_3,
             n_input,n_classes,beta1,beta2,epsilon,
             totalLoss,totalAcc,trainacc,acc-trainacc]
 
-    SaveResults(filename+'.csv', line)
+    SaveResults(folder+filename+'.csv', line)
+    
+class DataSet:
+    def __init__(self, words):
+
+        w2v = Word2Bigrams()
+        p2v = Pos2Vec()
+        
+        self._index_in_epoch = 0
+        
+        self.input = [] # store the input vector
+        self.output =[] # store the output vector
+        self.word = []  # store the word
+        self.pos = []   # store the pos of the word
+        
+        for w in words:
+#            print ('dataset element: ',w)
+            vec = w2v.Word2Vec(w)
+            # check if it is a valid word
+            if vec:
+                self.input.append(vec)
+                pos = p2v.words[w]
+                self.output.append(p2v.Pos2Vec(pos))
+                self.word.append(w)
+                self.pos.append(pos)
+                
+        self.input = np.array(self.input)
+        self.output = np.array(self.output)
+    
+    def reset_epoch (self):
+        self._index_in_epoch = 0
+        
+    def next_batch(self, batch_size):
+        """Return the next `batch_size` examples from this data set."""
+        start = self._index_in_epoch
+        self._index_in_epoch += batch_size
+        end = self._index_in_epoch
+        return self.input[start:end], self.output[start:end]
+
+    def next_batch_extended(self, batch_size):
+        """Return the next `batch_size` examples from this data set."""
+        start = self._index_in_epoch
+        self._index_in_epoch += batch_size
+        end = self._index_in_epoch
+        return self.input[start:end], self.output[start:end], self.word[start:end], self.pos[start:end]
+
+try:
+    folder = sys.argv[1] 
+except IndexError:
+    folder = ""
+    
+# words for feeding the nn
+words = list(p2v.words.keys())
+
+# testing, only the first 5000 words
+words = words[:5000]
+
+random.shuffle(words)
+
+# dataset dimension
+trainDim = int(trainDim*len(words))   
+testDim = int(testDim*len(words))
+validDim = int(validDim*len(words))    
+# words lists    
+train = words[-trainDim:]    
+test = words[:testDim]
+validate = words[testDim:trainDim]    
+# dataset creation    
+train = DataSet(train)
+test = DataSet(test)
+validate = DataSet(validate)
+
+# total batch
+total_batch = int(len(train.word)/batch_size)
+
+TestingNNs()

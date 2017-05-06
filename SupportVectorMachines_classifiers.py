@@ -30,6 +30,9 @@ import random                    # module for random/shuffling functions
 from sklearn import svm
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.decomposition import TruncatedSVD
+
+import sys
+
 # classes for vectorizing words
 from Word2Vec import Word2Bigrams, Pos2Vec
 
@@ -85,7 +88,7 @@ def FeaturesExtractor (word):
 #  Function for create and save a figure
 #==============================================================================
 
-def CreateFigure(svc, X,Y, s, mapcolors):
+def CreateFigure(svc, X,Y, s, mapcolors, folder):
     # item colors    
     colors = [mapcolors[c] for c in Y]
     # legend items
@@ -114,12 +117,15 @@ def CreateFigure(svc, X,Y, s, mapcolors):
     plt.xlabel('Part Of Speech', fontsize=25)
     plt.ylabel('Features', fontsize=25)
     plt.xlim(xx.min(), xx.max())
+    # remove tick marks
+    plt.tick_params(axis='both', which='both', bottom='off', top='off', 
+            labelbottom='off', right='off', left='off', labelleft='off')
     plt.title(s, fontsize=32)
     # add legend
     plt.legend(handles=legitems, loc='best', bbox_to_anchor=(1, 1),
                prop={'weight':'roman','size':'xx-large'})
     # Save Figure
-    plt.savefig(s+'.jpeg',dpi=xSize*6,format='jpeg', bbox_inches="tight")
+    plt.savefig(folder+s+'.jpeg',dpi=xSize*6,format='jpeg', bbox_inches="tight")
 
 #==============================================================================
 #  Tesst for Accuracy
@@ -132,6 +138,15 @@ def TestAccuracy(svc, X_test, y_test):
 #==============================================================================
 #  script data
 #==============================================================================
+
+# define folder to save file
+try:
+    folder = sys.argv[1] 
+except IndexError:
+    folder = ""
+    
+print ('work folder:',folder)
+
 w2v = Word2Bigrams()
 p2v = Pos2Vec()
 
@@ -216,16 +231,16 @@ for c in [1, 10, 100, 1000]:
         # computing kernel
         svc = svm.SVC(kernel='linear', C=c, gamma=g).fit(X, y)
         TestAccuracy(svc, X_test, y_test)
-        CreateFigure(svc, X,Y, s, mapcolors)
+        CreateFigure(svc, X,Y, s, mapcolors, folder)
 
         s = 'SVC rbf c: '+str(c)+' gamma: '+str(g)
         svc = svm.SVC(kernel='rbf', C=c, gamma=g).fit(X, y)
         TestAccuracy(svc, X_test, y_test)
-        CreateFigure(svc, X,Y, s, mapcolors)
+        CreateFigure(svc, X,Y, s, mapcolors, folder)
  
         for d in [1, 3, 5]:    
             s = 'SVC poly c: '+str(c)+' gamma: '+str(g) + ' degree: '+str(d)
             svc = svm.SVC(kernel='rbf', C=c, gamma=g).fit(X, y)
             TestAccuracy(svc, X_test, y_test)
-            CreateFigure(svc, X,Y, s, mapcolors)
+            CreateFigure(svc, X,Y, s, mapcolors, folder)
  
