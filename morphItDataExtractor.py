@@ -7,7 +7,7 @@ This module contains the class to extract and elaborate data from morphit
 Everything you need is not here!
 
 Vesion: 1.0-c stable
-CODE TESTED ON Python 3.5 and Python 2.7
+CODE TESTED ON Python 3.x and Python 2.7
 #==============================================================================
 Università degli studi di Trento (Tn) - Italy
 Center for Mind/Brain Sciences CIMeC
@@ -21,7 +21,7 @@ Language, Interaction and Computation Laboratory CLIC
 
 
         Francesco Mantegna
-        ADD_EMAIL_ADDRESS
+        fmantegna93@gmail.com
         
 #==============================================================================
 """
@@ -47,8 +47,8 @@ class MorphItDataExtractor(object):
         if not self.words:
             self.ReadMorphit()
             self.SaveWords()
-        else:
-            print('data loaded')
+#        else:
+#            print('data loaded')
 
     def isVerb(self, word):
         if self.words[word] in self.verbTags:
@@ -80,6 +80,7 @@ class MorphItDataExtractor(object):
         with open('mWords.pkl', 'wb') as f:
             dill.dump(self.words, f)
 
+        
     def LoadWords(self):
         try:
             with open('mWords.pkl', 'rb') as f:

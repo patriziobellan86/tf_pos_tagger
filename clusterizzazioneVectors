@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri May  5 12:59:44 2017
+
+@author: patrizio
+"""
+
+# test k-means using the euclidean distance metric, 2 means and repeat 
+# clustering 10 times with random seeds 
+   
+clusterer = cluster.KMeansClusterer(2, euclidean_distance, repeats=10) 
+clusters = clusterer.cluster(vectors, True) 
+
+print 'Clustered:', vectors 
+print 'As:', clusters 
+print 'Means:', clusterer.means() 
+print 
+   
+# classify a new vector 
+vector = array([3, 3]) 
+print 'classify(%s):' % vector, 
+print clusterer.classify(vector) 
+print
+
+print
+print "GAAC Clustering"
+print
+# use a set of tokens with 2D indices 
+vectors = [array(f) for f in [[3, 3], [1, 2], [4, 2], [4, 0], [2, 3], [3, 1]]] 
+
+# test the GAAC clusterer with 4 clusters 
+clusterer = cluster.GAAClusterer(4) 
+clusters = clusterer.cluster(vectors, True) 
+ 
+print 'Clusterer:', clusterer 
+print 'Clustered:', vectors 
+print 'As:', clusters 
+print 
+      
+# show the dendrogram 
+print "The dendogram"
+print
+clusterer.dendrogram().show() 
+    
+# classify a new vector
+print "Classify the vector [3,3]"
+vector = array([3, 3]) 
+print 'classify(%s):' % vector, 
+print clusterer.classify(vector) 
+print
