@@ -16,7 +16,7 @@ Language, Interaction and Computation Laboratory CLIC
         fmantegna93@gmail.com
           
 """
-
+from __future__ import division
 from __future__ import print_function
 
 import csv
@@ -45,7 +45,7 @@ validDim = 0.1
 learning_rate = 0.05 #0.001
 training_epochs = 50 #80
 batch_size = 50
-display_step = 10
+display_step = 25
 
 # Network Parameters
 n_hidden_1 = 250#1000#50 # 1st layer number of features
@@ -63,14 +63,12 @@ epsilon=1e-02 #1e-08
 
 def CreateFigure(s, trainAcc,testAcc, loss, folder):
     # accuracy figure
-    plt.figure()
-    # plot style preferences
-    plt.style.use('ggplot')       
+    plt.figure()     
     plt.plot(trainAcc, 'b-', label='training accuracy',linewidth=1.0)
     plt.plot(testAcc, 'm-', label='test accuracy',linewidth=1.0)
     plt.xlabel('epochs')
     plt.ylabel('accuracy value')
-    plt.ylim(0, 1.1)
+    plt.ylim(-0.1, 1.1)
     plt.title(s)
     # add legend
     plt.legend(loc='best')
@@ -79,7 +77,6 @@ def CreateFigure(s, trainAcc,testAcc, loss, folder):
 
     # loss figure
     plt.figure()
-    plt.style.use('ggplot')   
     plt.plot(loss, 'r-',linewidth=0.1)
     plt.xlabel('epochs')
     plt.ylabel('average loss')
@@ -90,32 +87,49 @@ def CreateFigure(s, trainAcc,testAcc, loss, folder):
 
 
 def SaveResults (filename, data):
-    outfile  = open(filename, "a")
-    writer = csv.writer(outfile, delimiter=';', quotechar='"')
-    # write headers
-    writer.writerow(data)
-    writer.writerow('\n')
-    outfile.close()
+    with open(filename, "a") as outfile:
+        writer = csv.writer(outfile, delimiter=';', quotechar='"')
+        # write headers
+        writer.writerow(data)
+        writer.writerow('\n')   
 
 #==============================================================================
-def TestingNNs():
+def GlobalTestingNNs():
     for learning_rate in [0.001, 0.05]:
         for training_epochs in [50, 100]:
             for batch_size in [50, 80]:
                 for n_hidden_1 in [250, 500, 1000]:
                     for n_hidden_2 in [125, 250, 500]:
                         for n_hidden3 in [25, 50, 500]:
-                            for epsilon in [1e-02, 1e-08]:
-                                h2(learning_rate,training_epochs, 
-                                   batch_size,n_hidden_1, n_hidden_2,n_hidden3,
-                                   n_input,n_classes,beta1,beta2,epsilon,
-                                   'h2')
-                                h3(learning_rate,training_epochs, 
-                                   batch_size,n_hidden_1, n_hidden_2,n_hidden3,
-                                   n_input,n_classes,beta1,beta2,epsilon,
-                                   'h3')
-                                
-                                break
+                            for beta1 in [0.5, 0.9]:
+                                for beta2 in [0.09, 0.999]:
+                                    for epsilon in [1e-02, 1e-08]:
+                                        h2(learning_rate,training_epochs, 
+                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                                           n_input,n_classes,beta1,beta2,epsilon,
+                                           '2layers_')
+                                        h3(learning_rate,training_epochs, 
+                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                                           n_input,n_classes,beta1,beta2,epsilon,
+                                           '3layers_')
+def TestingNNs():
+    for learning_rate in [0.001, 0.05]:
+        for training_epochs in [50, 100]:
+            for batch_size in [50]:
+                for n_hidden_1 in [250, 500, 1000]:
+                    for n_hidden_2 in [125, 250, 500]:
+                        for n_hidden3 in [25, 50, 500]:
+                            for beta1 in [0.9]:
+                                for beta2 in [0.999]:
+                                    for epsilon in [1e-02, 1e-08]:
+                                        h2(learning_rate,training_epochs, 
+                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                                           n_input,n_classes,beta1,beta2,epsilon,
+                                           '2layers_')
+                                        h3(learning_rate,training_epochs, 
+                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                                           n_input,n_classes,beta1,beta2,epsilon,
+                                           '3layers_')
 #==============================================================================
 # H2
 #==============================================================================
@@ -207,22 +221,9 @@ def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden
         train.reset_epoch()
         
     totalLoss= avg_cost
-    
-    
-    plt.plot(lines)
-    plt.show()
-    
-    
-    plt.plot(linesvalidate)
-    plt.show()  
      
     print("Optimization Finished!")
-#    
-#    saver = tf.train.Saver()
-#    # Save model weights to disk
-#    save_path = saver.save(sess, 'model'+model_ext)
-#    print("Model saved")
-    
+
     batch_x, batch_y = test.next_batch(len(test.word))
     feed_dict={x: batch_x, y: batch_y}
     acc =  accuracy.eval(feed_dict=feed_dict, session=sess)         
@@ -348,22 +349,9 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
         train.reset_epoch()
         
     totalLoss= avg_cost
-    
-    
-    plt.plot(lines)
-    plt.show()
-    
-    
-    plt.plot(linesvalidate)
-    plt.show()  
-     
+
     print("Optimization Finished!")
-    
-#    saver = tf.train.Saver()
-#    # Save model weights to disk
-#    save_path = saver.save(sess, 'model'+model_ext)
-#    print("Model saved")
-    
+
     # Test model    
     batch_x, batch_y = test.next_batch(len(test.word))
     feed_dict={x: batch_x, y: batch_y}
@@ -382,7 +370,6 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
         
     totalAcc = [totalAcc for i in range(len(linesvalidate))]
     
-#    def CreateFigure(s, trainAcc,testAcc, loss, folder):
     CreateFigure(s, linesvalidate,totalAcc, lines, folder)
     
     line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden_3,
@@ -405,7 +392,6 @@ class DataSet:
         self.pos = []   # store the pos of the word
         
         for w in words:
-#            print ('dataset element: ',w)
             vec = w2v.Word2Vec(w)
             # check if it is a valid word
             if vec:
@@ -414,7 +400,6 @@ class DataSet:
                 self.output.append(p2v.Pos2Vec(pos))
                 self.word.append(w)
                 self.pos.append(pos)
-                
         self.input = np.array(self.input)
         self.output = np.array(self.output)
     
@@ -444,7 +429,9 @@ except IndexError:
 words = list(p2v.words.keys())
 
 # testing, only the first 5000 words
-words = words[:5000]
+#words = words[:25000]
+# validating words
+words = [w for w in words if w2v._ValidateWord(w)]
 
 random.shuffle(words)
 

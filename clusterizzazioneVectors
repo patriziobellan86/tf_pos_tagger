@@ -5,47 +5,48 @@ Created on Fri May  5 12:59:44 2017
 
 @author: patrizio
 """
+    # example from figure 14.9, page 517, Manning and Schutze
+
+from nltk.cluster import KMeansClusterer, GAAClusterer, euclidean_distance
+import numpy
+
+vectors = [numpy.array(f) for f in [[2, 1], [1, 3], [4, 7], [6, 7]]]
+means = [[4, 3], [5, 5]]
 
 # test k-means using the euclidean distance metric, 2 means and repeat 
 # clustering 10 times with random seeds 
-   
-clusterer = cluster.KMeansClusterer(2, euclidean_distance, repeats=10) 
+vectors = [numpy.array(f) for f in [[3, 3], [1, 2], [4, 2], [4, 0], [2, 3], [3, 1]]]   
+clusterer = KMeansClusterer(2, euclidean_distance, repeats=10) 
 clusters = clusterer.cluster(vectors, True) 
 
-print 'Clustered:', vectors 
-print 'As:', clusters 
-print 'Means:', clusterer.means() 
-print 
+print('Clustered:', vectors)
+print('As:', clusters )
+print('Means:', clusterer.means() )
    
 # classify a new vector 
-vector = array([3, 3]) 
-print 'classify(%s):' % vector, 
-print clusterer.classify(vector) 
-print
+vector = numpy.array([3, 3]) 
+print('classify(%s):' % vector)
+print(clusterer.classify(vector) )
 
-print
-print "GAAC Clustering"
-print
+
+print("GAAC Clustering")
 # use a set of tokens with 2D indices 
-vectors = [array(f) for f in [[3, 3], [1, 2], [4, 2], [4, 0], [2, 3], [3, 1]]] 
+vectors = [numpy.array(f) for f in [[3, 3], [1, 2], [4, 2], [4, 0], [2, 3], [3, 1]]] 
 
 # test the GAAC clusterer with 4 clusters 
-clusterer = cluster.GAAClusterer(4) 
+clusterer = GAAClusterer(4) 
 clusters = clusterer.cluster(vectors, True) 
  
-print 'Clusterer:', clusterer 
-print 'Clustered:', vectors 
-print 'As:', clusters 
-print 
+print('Clusterer:', clusterer )
+print('Clustered:', vectors )
+print('As:', clusters )
       
 # show the dendrogram 
-print "The dendogram"
-print
+print("The dendogram")
 clusterer.dendrogram().show() 
     
 # classify a new vector
-print "Classify the vector [3,3]"
-vector = array([3, 3]) 
-print 'classify(%s):' % vector, 
-print clusterer.classify(vector) 
-print
+print("Classify the vector [3,3]")
+vector = numpy.array([3, 3]) 
+print('classify(%s):' % vector)
+print(clusterer.classify(vector) )
