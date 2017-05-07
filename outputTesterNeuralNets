@@ -1,0 +1,355 @@
+total words:20740
+training words:14517
+test words:4148
+Epoch: 1 loss= 13.5897869615
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.144741392334
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.167933226505
+accuracy epoch 21: 0.98
+Epoch: 31 loss= 0.0983767151909
+accuracy epoch 31: 1.0
+Epoch: 41 loss= 0.0518323127774
+accuracy epoch 41: 0.98
+training accuracy: 0.975200006962 test accuracy: 0.951543 difference (training-test): -0.0236570930481 global loss: 0.0626265465745
+Epoch 1 loss= 30.1319941942
+accuracy epoch 1: 0.84
+Epoch 11 loss= 0.523412762634
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549815392083
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.54968688786
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549624446137
+accuracy epoch 41: 0.8
+training accuracy: 0.810400011539 test accuracy: 0.844021 difference (training-test): 0.0336211895943 global loss: 0.549591295781
+Epoch: 1 loss= 12.998830026
+accuracy epoch 1: 0.86
+Epoch: 11 loss= 0.168993777138
+accuracy epoch 11: 0.94
+Epoch: 21 loss= 0.373911331363
+accuracy epoch 21: 0.92
+Epoch: 31 loss= 0.52740943216
+accuracy epoch 31: 0.8
+Epoch: 41 loss= 0.624827048696
+accuracy epoch 41: 0.92
+training accuracy: 0.899599997997 test accuracy: 0.868129 difference (training-test): -0.0314708042145 global loss: 0.653649053389
+Epoch 1 loss= 16.686017338
+accuracy epoch 1: 0.92
+Epoch 11 loss= 0.55018474213
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.5500230188
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.550010753603
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.550008098524
+accuracy epoch 41: 0.8
+training accuracy: 0.819600012302 test accuracy: 0.844021 difference (training-test): 0.0244211888313 global loss: 0.550007573592
+Epoch: 1 loss= 10.8573065556
+accuracy epoch 1: 0.88
+Epoch: 11 loss= 0.141229334096
+accuracy epoch 11: 0.94
+Epoch: 21 loss= 0.0778712175715
+accuracy epoch 21: 0.96
+Epoch: 31 loss= 0.122164792999
+accuracy epoch 31: 0.98
+Epoch: 41 loss= 0.0866703602036
+accuracy epoch 41: 0.98
+training accuracy: 0.959199999571 test accuracy: 0.939007 difference (training-test): -0.0201932537556 global loss: 0.10310281139
+Epoch 1 loss= 30.5360631801
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.492610926104
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549753391743
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549619764398
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549555268267
+accuracy epoch 41: 0.8
+training accuracy: 0.800000011921 test accuracy: 0.844021 difference (training-test): 0.0440211892128 global loss: 0.549521213873
+Epoch: 1 loss= 13.6316401317
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.133880123785
+accuracy epoch 11: 1.0
+Epoch: 21 loss= 0.176432782373
+accuracy epoch 21: 0.96
+Epoch: 31 loss= 0.524534793095
+accuracy epoch 31: 0.84
+Epoch: 41 loss= 0.464939477988
+accuracy epoch 41: 0.92
+training accuracy: 0.923600001335 test accuracy: 0.891996 difference (training-test): -0.0316038560867 global loss: 0.411827348841
+Epoch 1 loss= 27.358035673
+accuracy epoch 1: 0.84
+Epoch 11 loss= 0.601502828043
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549999896
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549989363243
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549985907201
+accuracy epoch 41: 0.8
+training accuracy: 0.811600009203 test accuracy: 0.844021 difference (training-test): 0.0324211919308 global loss: 0.549985038104
+Epoch: 1 loss= 22.7119019945
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.380667535696
+accuracy epoch 11: 0.96
+Epoch: 21 loss= 0.162263296991
+accuracy epoch 21: 1.0
+Epoch: 31 loss= 0.119925367911
+accuracy epoch 31: 1.0
+Epoch: 41 loss= 0.0923337483352
+accuracy epoch 41: 1.0
+training accuracy: 0.981600003242 test accuracy: 0.947203 difference (training-test): -0.034396545887 global loss: 0.0626403735828
+Epoch 1 loss= 18.1814176126
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.549985479178
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549627216212
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549506412498
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549447494848
+accuracy epoch 41: 0.8
+training accuracy: 0.800000011921 test accuracy: 0.844021 difference (training-test): 0.0440211892128 global loss: 0.549415879414
+Epoch: 1 loss= 21.7926606015
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.102176041597
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.160830465202
+accuracy epoch 21: 0.94
+Epoch: 31 loss= 0.444533738802
+accuracy epoch 31: 0.9
+Epoch: 41 loss= 0.410216893513
+accuracy epoch 41: 0.9
+training accuracy: 0.923999999762 test accuracy: 0.901157 difference (training-test): -0.0228427994251 global loss: 0.405525154749
+Epoch 1 loss= 32.7316500498
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.549989075085
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.550012905639
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.550009922735
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.550008040667
+accuracy epoch 41: 0.8
+training accuracy: 0.800400011539 test accuracy: 0.844021 difference (training-test): 0.0436211895943 global loss: 0.550007523853
+Epoch: 1 loss= 20.4105140134
+accuracy epoch 1: 0.9
+Epoch: 11 loss= 0.131906944252
+accuracy epoch 11: 1.0
+Epoch: 21 loss= 0.0733329716493
+accuracy epoch 21: 0.98
+Epoch: 31 loss= 0.0606605184772
+accuracy epoch 31: 0.98
+Epoch: 41 loss= 0.0316149346465
+accuracy epoch 41: 0.98
+training accuracy: 0.980800009966 test accuracy: 0.942141 difference (training-test): -0.0386591923237 global loss: 0.130206696066
+Epoch 1 loss= 34.286484163
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.550258192728
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549817972861
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549686581924
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549624254375
+accuracy epoch 41: 0.8
+training accuracy: 0.800400011539 test accuracy: 0.844021 difference (training-test): 0.0436211895943 global loss: 0.549591186334
+Epoch: 1 loss= 19.5801193359
+accuracy epoch 1: 0.92
+Epoch: 11 loss= 0.230512759651
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.188958273549
+accuracy epoch 21: 0.96
+Epoch: 31 loss= 0.365881410704
+accuracy epoch 31: 0.92
+Epoch: 41 loss= 0.401143136698
+accuracy epoch 41: 0.82
+training accuracy: 0.91839999795 test accuracy: 0.893925 difference (training-test): -0.0244752252102 global loss: 0.412452430124
+Epoch 1 loss= 49.6648646394
+accuracy epoch 1: 0.94
+Epoch 11 loss= 0.29435359276
+accuracy epoch 11: 1.0
+Epoch 21 loss= 0.184885601833
+accuracy epoch 21: 0.9
+Epoch 31 loss= 0.549804951919
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549727503801
+accuracy epoch 41: 0.8
+training accuracy: 0.878000005484 test accuracy: 0.844021 difference (training-test): -0.0339788043499 global loss: 0.549723195105
+Epoch: 1 loss= 17.9161785878
+accuracy epoch 1: 0.92
+Epoch: 11 loss= 0.105333793171
+accuracy epoch 11: 0.96
+Epoch: 21 loss= 0.141933788406
+accuracy epoch 21: 0.96
+Epoch: 31 loss= 0.296245664993
+accuracy epoch 31: 0.94
+Epoch: 41 loss= 0.330605253449
+accuracy epoch 41: 0.98
+training accuracy: 0.964000000954 test accuracy: 0.919238 difference (training-test): -0.0447617912292 global loss: 0.320474575049
+Epoch 1 loss= 34.1687746903
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.275227640595
+accuracy epoch 11: 0.86
+Epoch 21 loss= 0.549889169479
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549719773182
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549641137904
+accuracy epoch 41: 0.8
+training accuracy: 0.816000009775 test accuracy: 0.844021 difference (training-test): 0.0280211913586 global loss: 0.549601901811
+Epoch: 1 loss= 24.3155419755
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.19152350943
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.107672664049
+accuracy epoch 21: 0.98
+Epoch: 31 loss= 0.427507962749
+accuracy epoch 31: 0.92
+Epoch: 41 loss= 0.598676103816
+accuracy epoch 41: 0.8
+training accuracy: 0.884400008917 test accuracy: 0.844021 difference (training-test): -0.0403788077831 global loss: 0.534440749986
+Epoch 1 loss= 33.5444300634
+accuracy epoch 1: 0.82
+Epoch 11 loss= 0.548390006094
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.548346462435
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.548338985135
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.548337156814
+accuracy epoch 41: 0.8
+training accuracy: 0.806000010967 test accuracy: 0.844262 difference (training-test): 0.0382622909546 global loss: 0.548336662403
+Epoch: 1 loss= 18.8558219691
+accuracy epoch 1: 0.96
+Epoch: 11 loss= 0.129045874046
+accuracy epoch 11: 1.0
+Epoch: 21 loss= 0.125127693686
+accuracy epoch 21: 0.92
+Epoch: 31 loss= 0.164254586038
+accuracy epoch 31: 0.94
+Epoch: 41 loss= 0.120714659959
+accuracy epoch 41: 0.96
+training accuracy: 0.957999997139 test accuracy: 0.937801 difference (training-test): -0.020198636055 global loss: 0.104414309141
+Epoch 1 loss= 31.4697342997
+accuracy epoch 1: 0.92
+Epoch 11 loss= 0.320898712067
+accuracy epoch 11: 0.92
+Epoch 21 loss= 0.549894111115
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549709323973
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549635525716
+accuracy epoch 41: 0.8
+training accuracy: 0.828800013065 test accuracy: 0.844021 difference (training-test): 0.0152211880684 global loss: 0.549598329951
+Epoch: 1 loss= 20.2196956896
+accuracy epoch 1: 0.92
+Epoch: 11 loss= 0.132065598608
+accuracy epoch 11: 0.96
+Epoch: 21 loss= 0.450218392035
+accuracy epoch 21: 0.9
+Epoch: 31 loss= 0.702636701074
+accuracy epoch 31: 0.8
+Epoch: 41 loss= 0.54738351713
+accuracy epoch 41: 0.8
+training accuracy: 0.874800004959 test accuracy: 0.844021 difference (training-test): -0.0307788038254 global loss: 0.547375131373
+Epoch 1 loss= 15.3454471252
+accuracy epoch 1: 0.86
+Epoch 11 loss= 0.549751699382
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.54970690495
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549690026353
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.549685558266
+accuracy epoch 41: 0.8
+training accuracy: 0.801200011969 test accuracy: 0.844021 difference (training-test): 0.0428211891651 global loss: 0.549684545912
+Epoch: 1 loss= 36.4610101884
+accuracy epoch 1: 0.92
+Epoch: 11 loss= 0.369406495851
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.121880838154
+accuracy epoch 21: 0.98
+Epoch: 31 loss= 0.118146601153
+accuracy epoch 31: 0.96
+Epoch: 41 loss= 0.078692340457
+accuracy epoch 41: 0.98
+training accuracy: 0.982800008059 test accuracy: 0.945516 difference (training-test): -0.0372840774059 global loss: 0.0955127191526
+Epoch 1 loss= 68.946030831
+accuracy epoch 1: 0.92
+Epoch 11 loss= 0.233992572257
+accuracy epoch 11: 0.94
+Epoch 21 loss= 0.543147641215
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.54883736742
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.548734070926
+accuracy epoch 41: 0.8
+training accuracy: 0.849600006342 test accuracy: 0.844021 difference (training-test): -0.00557880520821 global loss: 0.548684409364
+Epoch: 1 loss= 35.9658489027
+accuracy epoch 1: 0.96
+Epoch: 11 loss= 0.17127048804
+accuracy epoch 11: 0.98
+Epoch: 21 loss= 0.32970443174
+accuracy epoch 21: 0.94
+Epoch: 31 loss= 0.501870879171
+accuracy epoch 31: 0.88
+Epoch: 41 loss= 0.505667771039
+accuracy epoch 41: 0.84
+training accuracy: 0.912000001669 test accuracy: 0.890309 difference (training-test): -0.021691442728 global loss: 0.431603245232
+Epoch 1 loss= 37.5394590585
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.550196844031
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.550064194716
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.550022271789
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.550010940741
+accuracy epoch 41: 0.8
+training accuracy: 0.800000011921 test accuracy: 0.844021 difference (training-test): 0.0440211892128 global loss: 0.55000834352
+Epoch: 1 loss= 39.8083841005
+accuracy epoch 1: 0.9
+Epoch: 11 loss= 0.301215206549
+accuracy epoch 11: 0.96
+Epoch: 21 loss= 0.156984468644
+accuracy epoch 21: 0.98
+Epoch: 31 loss= 0.221171656978
+accuracy epoch 31: 0.96
+Epoch: 41 loss= 0.161156376458
+accuracy epoch 41: 0.94
+training accuracy: 0.969999998808 test accuracy: 0.933944 difference (training-test): -0.0360559523106 global loss: 0.107073909015
+Epoch 1 loss= 29.1252355081
+accuracy epoch 1: 0.8
+Epoch 11 loss= 0.549894339257
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.549531232489
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.549399298738
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.54933523546
+accuracy epoch 41: 0.8
+training accuracy: 0.800000011921 test accuracy: 0.844021 difference (training-test): 0.0440211892128 global loss: 0.549301430069
+Epoch: 1 loss= 39.0842169265
+accuracy epoch 1: 0.94
+Epoch: 11 loss= 0.30461127557
+accuracy epoch 11: 1.0
+Epoch: 21 loss= 0.26113208084
+accuracy epoch 21: 0.94
+Epoch: 31 loss= 0.541920840021
+accuracy epoch 31: 0.88
+Epoch: 41 loss= 0.484494825889
+accuracy epoch 41: 0.86
+training accuracy: 0.923200000525 test accuracy: 0.896577 difference (training-test): -0.0266233575344 global loss: 0.529294219356
+Epoch 1 loss= 74.9755248572
+accuracy epoch 1: 0.82
+Epoch 11 loss= 0.554797891193
+accuracy epoch 11: 0.8
+Epoch 21 loss= 0.550032781732
+accuracy epoch 21: 0.8
+Epoch 31 loss= 0.550003534658
+accuracy epoch 31: 0.8
+Epoch 41 loss= 0.54999685863
+accuracy epoch 41: 0.8
+training accuracy: 0.811200010777 test accuracy: 0.844021 difference (training-test): 0.0328211903572 global loss: 0.549995384853
