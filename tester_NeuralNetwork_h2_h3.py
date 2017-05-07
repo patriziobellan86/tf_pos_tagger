@@ -42,14 +42,14 @@ testDim = 0.2
 validDim = 0.1
 
 # Training Parameters
-learning_rate = 0.05 #0.001
-training_epochs = 50 #80
-batch_size = 50
-display_step = 25
+learning_rate = 0.05 #ok # 0.001
+training_epochs = 50 #ok # 80
+batch_size = 50 #ok
+display_step = 10
 
 # Network Parameters
-n_hidden_1 = 250#1000#50 # 1st layer number of features
-n_hidden_2 = 125#250#500 # 2nd layer number of features
+n_hidden_1 = 250#ok #1000#500 # 1st layer number of features
+n_hidden_2 = 125#ok #250#500 # 2nd layer number of features
 n_hidden_3 = 25#50#500 # 2nd layer number of features
 
 n_input = len(w2v.bidict)
@@ -58,7 +58,7 @@ n_classes = len(p2v.posdict)
 # optimazer params
 beta1=0.9
 beta2=0.999
-epsilon=1e-02 #1e-08
+epsilon=1e-02 #1e-08 ok
 
 
 def CreateFigure(s, trainAcc,testAcc, loss, folder):
@@ -69,6 +69,13 @@ def CreateFigure(s, trainAcc,testAcc, loss, folder):
     plt.xlabel('epochs')
     plt.ylabel('accuracy value')
     plt.ylim(-0.1, 1.1)
+    plt.yticks(np.arange(-0.1, 1.1, 0.05))
+    
+    plt.tick_params(axis='both', which='major', labelsize=10)
+    s_accuracy = 'accuracy: '+str(testAcc[0])
+    plt.annotate(s_accuracy, xy=(25, testAcc[0]), xytext=(10, (testAcc[0]-0.3)),
+            arrowprops=dict(facecolor='magenta', shrink=0.05), )
+    
     plt.title(s)
     # add legend
     plt.legend(loc='best')
@@ -79,11 +86,12 @@ def CreateFigure(s, trainAcc,testAcc, loss, folder):
     plt.figure()
     plt.plot(loss, 'r-',linewidth=0.1)
     plt.xlabel('epochs')
-    plt.ylabel('average loss')
+    plt.ylabel('loss')
     plt.title(s)
     # Save Figure
     plt.savefig(folder+'loss_'+s+'.jpeg',dpi=150,format='jpeg', bbox_inches="tight")
-
+    # close all the figure to save memory
+    plt.close('all')
 
 
 def SaveResults (filename, data):
@@ -118,29 +126,47 @@ def GlobalTestingNNs():
 #==============================================================================
 # short test
 #==============================================================================
-def TestingNNs():
-    for learning_rate in [0.001, 0.05]:
-        for training_epochs in [50, 100]:
-            for batch_size in [50]:
-                for n_hidden_1 in [250, 500, 1000]:
-                    for n_hidden_2 in [125, 250, 500]:
-                        for n_hidden3 in [25, 50, 500]:
-                            for beta1 in [0.9]:
-                                for beta2 in [0.999]:
-                                    for epsilon in [1e-02, 1e-08]:
-                                        h2(learning_rate,training_epochs, 
-                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
-                                           n_input,n_classes,beta1,beta2,epsilon,
-                                           '2layers_')
-                                        h3(learning_rate,training_epochs, 
-                                           batch_size,n_hidden_1, n_hidden_2,n_hidden3,
-                                           n_input,n_classes,beta1,beta2,epsilon,
-                                           '3layers_')
+def TestingNNs(f):
+#    learning_rate = 0.05
+#    batch_size = 50
+#    beta1= 0.9
+#    beta2 = 0.999
+#    training_epochs = 50
+#    for n_hidden_1 in [250, 500]:
+#        for n_hidden_2 in [125, 250]:
+#            for n_hidden3 in [25, 50]:
+#                for epsilon in [1e-02, 1e-08]:
+#                    h2(f,learning_rate,training_epochs, 
+#                       batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+#                       n_input,n_classes,beta1,beta2,epsilon,
+#                       '2layers_')
+#                    h3(f,learning_rate,training_epochs, 
+#                       batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+#                       n_input,n_classes,beta1,beta2,epsilon,
+#                       '3layers_')
+    learning_rate = 0.05
+    batch_size = 50
+    beta1= 0.9
+    beta2 = 0.999
+    training_epochs = 50
+    epsilon = 1e-08
+    for n_hidden_1 in [250, 500]:
+        for n_hidden_2 in [125, 250]:
+            for n_hidden3 in [25, 50]:
+                for epsilon in [1e-02, 1e-08]:
+                    h2(f,learning_rate,training_epochs, 
+                       batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                       n_input,n_classes,beta1,beta2,epsilon,
+                       '2layers_')
+                    h3(f,learning_rate,training_epochs, 
+                       batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+                       n_input,n_classes,beta1,beta2,epsilon,
+                       '3layers_')
 #==============================================================================
 # H2
 #==============================================================================
                                         
-def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+def h2(f, learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden3,
                 n_input,n_classes,beta1,beta2,epsilon,
                 filename):    
     
@@ -177,92 +203,90 @@ def h2(learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden
     pred = multilayer_perceptron(x, weights, biases)
     
     # Define loss and optimizer
-    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y)) # sparse_softmax_cross_entropy_with_logits
+    cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y)+1e-50) # avoid NaN
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,beta1=beta1, beta2=beta2,epsilon=epsilon).minimize(cost)
     
     correct_pred = tf.equal(tf.argmax(y,1),tf.argmax(pred,1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-    
-    
-    ## Launch the graph
-    
+       
     # Initializing the variables
     init = tf.global_variables_initializer()
-    
     sess = tf.Session()    
     sess.run(init)
     
-    
-    totalLoss = 0
-    totalAcc = 0
     # Training cycle
-    lines=[]     # store lines for plot
-    linesvalidate = []
+    epochs_loss=[]     # store epochs_loss for plot
+    epochs_training_Accuracy = []
+    
+    # avoid session inconsistency
+    train.reset_epoch()
+    test.reset_epoch()
+
     for epoch in range(training_epochs):
-        print(epoch)
-        dataplot = []
+        epoch_loss = []
         avg_cost = 0.
-        print('total batch', total_batch)
         # Loop over all batches
         for i in range(total_batch-1):
             batch_x, batch_y = train.next_batch(batch_size)
-            # Run optimization op (backprop) and cost op (to get loss value)
-    #        feed_dict={x: batch_x, y: batch_y}
             _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
-            print ('c',c, 'c/tbatch',c / total_batch, 'avg_cost', avg_cost)
             # Compute average loss
             avg_cost += c / total_batch
-            dataplot.append(avg_cost)
-        
+            epoch_loss.append(avg_cost)
         # Display logs per epoch step
         if epoch % display_step == 0:
-            print("Epoch:", '%04d' % (epoch+1), "cost=", \
-                "{:.9f}".format(avg_cost))
-        acc = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
-        linesvalidate.append(acc)         
-        print('accuracy epoch',(epoch+1),':', acc)    
-    
-        lines.append(dataplot)
-    
+            s = 'Epoch: '+str(epoch+1)+' loss= '+str(avg_cost)
+            if f:
+                print(s, end="\n", file=f)     
+            print (s)
+            
+        training_accuracy = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
+        epochs_training_Accuracy.append(training_accuracy)         
+        if epoch % display_step == 0:
+            s = 'accuracy epoch '+str(epoch+1)+': '+str(training_accuracy)    
+            if f:
+                print(f, end="\n", file=f)     
+            print (s)
+        epochs_loss.append(epoch_loss)
         train.reset_epoch()
-        
     totalLoss= avg_cost
-     
-    print("Optimization Finished!")
-
+#    print("Optimization Finished!")
+    # Test model    
     batch_x, batch_y = test.next_batch(len(test.word))
     feed_dict={x: batch_x, y: batch_y}
-    acc =  accuracy.eval(feed_dict=feed_dict, session=sess)         
-    print('accuracy',acc)    
-    totalAcc = acc
-    trainacc = sum(linesvalidate)/len(linesvalidate)
-    print ('loss', totalLoss,'accuracy', totalAcc, 'training accuracy',trainacc)
-    print ('training acc - acc: ', acc - trainacc)
+    test_accuracy =  accuracy.eval(feed_dict=feed_dict, session=sess)         
+    training_accuracy = sum(epochs_training_Accuracy)/len(epochs_training_Accuracy)
     
-    # num2str in scientific notation
+    # close session
+    sess.close()
+    
+    s = 'training accuracy: '+str(training_accuracy)+' test accuracy: '+str(test_accuracy) + \
+        ' difference (training-test): '+str(test_accuracy - training_accuracy) + \
+        ' global loss: '+str(totalLoss)
+    if f:
+        print(s, end="\n", file=f)     
+    print (s)
+        # num2str in scientific notation
     epsilon = '%.3e' % epsilon
     # composing stringName
     s = filename+'h1_'+str(n_hidden_1)+'h2_'+str(n_hidden_2)+'h3_'+str(n_hidden3)+ \
         'learnRate_'+str(learning_rate)+'epochs_'+str(training_epochs)+ \
         'batchs_'+str(batch_size)+'b1_'+str(beta1)+'b2_'+str(beta2)+'ep_'+str(epsilon)
         
-    line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,0,
-                n_input,n_classes,beta1,beta2,epsilon,
-                totalLoss,totalAcc,trainacc,acc-trainacc]
+    line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden_3,
+            n_input,n_classes,beta1,beta2,epsilon,
+            totalLoss,training_accuracy, test_accuracy,test_accuracy-training_accuracy]
     SaveResults(folder+filename+'.csv', line)
     
-    totalAcc = [totalAcc for i in range(len(linesvalidate))]
-    
-    CreateFigure(s, linesvalidate,totalAcc, lines, folder)
+    test_accuracy = [test_accuracy for i in range(len(epochs_training_Accuracy))]
+    CreateFigure(s, epochs_training_Accuracy,test_accuracy, epochs_loss, folder)
     
 #==============================================================================
 # H3
 #==============================================================================
 
-def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+def h3 (f, learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden3,
                 n_input,n_classes,beta1,beta2,epsilon,
                 filename):
-    
     
     # tf Graph input
     x = tf.placeholder("float", shape=(None, n_input))
@@ -308,63 +332,62 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
     
     correct_pred = tf.equal(tf.argmax(y,1),tf.argmax(pred,1))
     accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
-    
-    
-    ## Launch the graph
-    
+
     # Initializing the variables
-    init = tf.global_variables_initializer()
-    
+    init = tf.global_variables_initializer() 
     sess = tf.Session()    
     sess.run(init)
-    
-    
-    totalLoss = 0
-    totalAcc = 0
+ 
     # Training cycle
-    lines=[]     # store lines for plot
-    linesvalidate = []
+    epochs_loss=[]     # store epochs_loss for plot
+    epochs_training_Accuracy = []
+    # avoid session inconsistency
+    train.reset_epoch()
+    test.reset_epoch()
+    
     for epoch in range(training_epochs):
-        print(epoch)
-        dataplot = []
+        epoch_loss = []
         avg_cost = 0.
-        print('total batch', total_batch)
         # Loop over all batches
         for i in range(total_batch-1):
             batch_x, batch_y = train.next_batch(batch_size)
-            # Run optimization op (backprop) and cost op (to get loss value)
-    #        feed_dict={x: batch_x, y: batch_y}
             _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
-            print ('c',c, 'c/tbatch',c / total_batch, 'avg_cost', avg_cost)
             # Compute average loss
             avg_cost += c / total_batch
-            dataplot.append(avg_cost)
-        
+            epoch_loss.append(avg_cost)
         # Display logs per epoch step
         if epoch % display_step == 0:
-            print("Epoch:", '%04d' % (epoch+1), "cost=", \
-                "{:.9f}".format(avg_cost))        
-        acc = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
-        linesvalidate.append(acc)         
-        print('accuracy epoch',(epoch+1),':', acc)    
-    
-        lines.append(dataplot)
-    
+            s = 'Epoch '+str(epoch+1)+' loss= '+str(avg_cost)
+            if f:
+                print(s, end="\n", file=f)     
+            print (s)
+            
+        training_accuracy = accuracy.eval(feed_dict={x: batch_x, y: batch_y}, session=sess)
+        epochs_training_Accuracy.append(training_accuracy)         
+        if epoch % display_step == 0:
+            s = 'accuracy epoch '+str(epoch+1)+': '+str(training_accuracy)    
+            if f:
+                print(f, end="\n", file=f)     
+            print (s)
+        epochs_loss.append(epoch_loss)
         train.reset_epoch()
-        
     totalLoss= avg_cost
-
-    print("Optimization Finished!")
-
+#    print("Optimization Finished!")
     # Test model    
     batch_x, batch_y = test.next_batch(len(test.word))
     feed_dict={x: batch_x, y: batch_y}
-    acc =  accuracy.eval(feed_dict=feed_dict, session=sess)         
-    print('accuracy',acc)    
-    totalAcc = acc
-    trainacc = sum(linesvalidate)/len(linesvalidate)
-    print ('loss', totalLoss,'accuracy', totalAcc, 'training accuracy',trainacc)
-    print ('training acc - acc: ', acc - trainacc)
+    test_accuracy =  accuracy.eval(feed_dict=feed_dict, session=sess)         
+    training_accuracy = sum(epochs_training_Accuracy)/len(epochs_training_Accuracy)
+
+    # close session
+    sess.close()
+    
+    s = 'training accuracy: '+str(training_accuracy)+' test accuracy: '+str(test_accuracy) + \
+        ' difference (training-test): '+str(test_accuracy - training_accuracy) + \
+        ' global loss: '+str(totalLoss)
+    if f:
+        print(s, end="\n", file=f)     
+    print (s)
         # num2str in scientific notation
     epsilon = '%.3e' % epsilon
     # composing stringName
@@ -374,23 +397,18 @@ def h3 (learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidde
         
     line = [learning_rate,training_epochs, batch_size,n_hidden_1, n_hidden_2,n_hidden_3,
             n_input,n_classes,beta1,beta2,epsilon,
-            totalLoss,totalAcc,trainacc,acc-trainacc]
-
+            totalLoss,training_accuracy, test_accuracy,test_accuracy-training_accuracy]
     SaveResults(folder+filename+'.csv', line)
     
-    totalAcc = [totalAcc for i in range(len(linesvalidate))]
-    
-    CreateFigure(s, linesvalidate,totalAcc, lines, folder)
-    
+    test_accuracy = [test_accuracy for i in range(len(epochs_training_Accuracy))]
+    CreateFigure(s, epochs_training_Accuracy,test_accuracy, epochs_loss, folder)
     
 class DataSet:
     def __init__(self, words):
-
         w2v = Word2Bigrams()
         p2v = Pos2Vec()
         
         self._index_in_epoch = 0
-        
         self.input = [] # store the input vector
         self.output =[] # store the output vector
         self.word = []  # store the word
@@ -425,10 +443,19 @@ class DataSet:
         end = self._index_in_epoch
         return self.input[start:end], self.output[start:end], self.word[start:end], self.pos[start:end]
 
+#==============================================================================
+# scpirt 
+#==============================================================================
+# folder to save data
 try:
     folder = sys.argv[1] 
 except IndexError:
     folder = ""
+# file to save data
+try:
+    f = open(sys.argv[2], 'a')
+except IndexError:
+    f = None
     
 # words for feeding the nn
 words = list(p2v.words.keys())
@@ -437,6 +464,10 @@ words = list(p2v.words.keys())
 words = words[:25000]
 # validating words
 words = [w for w in words if w2v._ValidateWord(w)]
+s = 'total words:'+str(len(words))
+if f:
+    print(s, end="\n", file=f)     
+print (s)
 
 random.shuffle(words)
 
@@ -446,7 +477,18 @@ testDim = int(testDim*len(words))
 validDim = int(validDim*len(words))    
 # words lists    
 train = words[-trainDim:]    
+
+s = 'training words:'+str(len(train))
+if f:
+    print(s, end="\n", file=f)     
+print (s)
+
 test = words[:testDim]
+s = 'test words:'+str(len(test))
+if f:
+    print(s, end="\n", file=f)     
+print (s)
+
 validate = words[testDim:trainDim]    
 # dataset creation    
 train = DataSet(train)
@@ -456,4 +498,10 @@ validate = DataSet(validate)
 # total batch
 total_batch = int(len(train.word)/batch_size)
 
-TestingNNs()
+TestingNNs(f)
+
+# if I direct the output into file, I close the file pointer
+try:
+    f.close()
+except:
+    pass
