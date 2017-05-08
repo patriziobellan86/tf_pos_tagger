@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 import numpy as np               # module for numeric fast computation
-
+import os
 import random                    # module for random/shuffling functions
 
 # modules for machine learning
@@ -126,7 +126,8 @@ def CreateFigure(svc, X,Y, s, mapcolors, folder):
                prop={'weight':'roman','size':'xx-large'})
     # Save Figure
     plt.savefig(folder+s+'.jpeg',dpi=xSize*6,format='jpeg', bbox_inches="tight")
-
+    plt.close('all')
+    
 #==============================================================================
 #  Tesst for Accuracy
 #==============================================================================
@@ -145,7 +146,14 @@ try:
 except IndexError:
     folder = ""
     
+# try to open file for save data
+try:
+    f = open(sys.argv[2], 'a')
+except IndexError:
+    f = None
+    
 print ('work folder:',folder)
+
 
 w2v = Word2Bigrams()
 p2v = Pos2Vec()
@@ -154,7 +162,7 @@ p2v = Pos2Vec()
 words = list(p2v.words.keys())
 #
 ## testing, only the first 5000 words
-#words = words[:5000]
+#words = words[:25000]
 
 # shuffling words in order to avoid any order effect
 random.shuffle(words)
@@ -163,12 +171,22 @@ words = [w for w in words if w2v._ValidateWord(w)]
 print ('total words :',len(words))
 # splitting data into training and test
 words_training = words[:int(trainDim*len(words))]
-words_test = words[int(trainDim*len(words)):int((trainDim+testDim)*len(words))]
-print ('training set:', len(words_training))
-print ('test set:', len(words_test))
+s = 'training words:'+str(len(words_training))
+if f:
+    print(s, end="\n", file=f)     
+print (s)
 
+words_test = words[int(trainDim*len(words)):int((trainDim+testDim)*len(words))]
+s = 'test words:'+str(len(words_test))
+if f:
+    print(s, end="\n", file=f)     
+print (s)
+
+f.flush()
+os.fsync(f.fileno())
+        
 # only for testing phase, use python -c filename to bypass this instrunction
-assert (len(words_training)>0 and len(words_test)>0)
+#assert (len(words_training)>0 and len(words_test)>0)
 
 # vectorizer
 vec = DictVectorizer(sparse=True)
@@ -230,17 +248,35 @@ for c in [1, 10, 100, 1000]:
         s = 'SVC linear c: '+str(c)+' gamma: '+str(g)
         # computing kernel
         svc = svm.SVC(kernel='linear', C=c, gamma=g).fit(X, y)
-        TestAccuracy(svc, X_test, y_test)
+        acc = TestAccuracy(svc, X_test, y_test)
+        s = s + ' accuracy: '+str(acc)
+        if f:
+            print(s, end="\n", file=f)     
+        print (s)
+        f.flush()
+        os.fsync(f.fileno())
         CreateFigure(svc, X,Y, s, mapcolors, folder)
 
         s = 'SVC rbf c: '+str(c)+' gamma: '+str(g)
         svc = svm.SVC(kernel='rbf', C=c, gamma=g).fit(X, y)
-        TestAccuracy(svc, X_test, y_test)
+        acc = TestAccuracy(svc, X_test, y_test)
+        s = s + ' accuracy: '+str(acc)
+        if f:
+            print(s, end="\n", file=f)     
+        print (s)
+        f.flush()
+        os.fsync(f.fileno())
         CreateFigure(svc, X,Y, s, mapcolors, folder)
- 
-        for d in [1, 3, 5]:    
-            s = 'SVC poly c: '+str(c)+' gamma: '+str(g) + ' degree: '+str(d)
-            svc = svm.SVC(kernel='rbf', C=c, gamma=g).fit(X, y)
-            TestAccuracy(svc, X_test, y_test)
-            CreateFigure(svc, X,Y, s, mapcolors, folder)
- 
+# 
+#        for d in [1, 3, 5]:    
+#            s = 'SVC poly c: '+str(c)+' gamma: '+str(g) + ' degree: '+str(d)
+#            svc = svm.SVC(kernel='poly', C=c, gamma=g, degree=d).fit(X, y)
+#            acc = TestAccuracy(svc, X_test, y_test)
+#            s = s + ' accuracy: '+str(acc)
+#            if f:
+#                print(s, end="\n", file=f)     
+#            print (s)
+#            f.flush()
+#            os.fsync(f.fileno())
+#            CreateFigure(svc, X,Y, s, mapcolors, folder)
+

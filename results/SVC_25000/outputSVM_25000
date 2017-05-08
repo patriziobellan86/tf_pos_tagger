@@ -1,0 +1,26 @@
+training words:14517
+test words:4148
+SVC linear c: 1 gamma: 1 accuracy: 0.832208293153
+SVC rbf c: 1 gamma: 1 accuracy: 0.845949855352
+SVC linear c: 1 gamma: 10 accuracy: 0.832208293153
+SVC rbf c: 1 gamma: 10 accuracy: 0.846673095468
+SVC linear c: 1 gamma: 100 accuracy: 0.832208293153
+SVC rbf c: 1 gamma: 100 accuracy: 0.847878495661
+SVC linear c: 10 gamma: 1 accuracy: 0.832208293153
+SVC rbf c: 10 gamma: 1 accuracy: 0.846190935391
+SVC linear c: 10 gamma: 10 accuracy: 0.832208293153
+SVC rbf c: 10 gamma: 10 accuracy: 0.848360655738
+SVC linear c: 10 gamma: 100 accuracy: 0.832208293153
+SVC rbf c: 10 gamma: 100 accuracy: 0.849083895853
+SVC linear c: 100 gamma: 1 accuracy: 0.832208293153
+SVC rbf c: 100 gamma: 1 accuracy: 0.845708775313
+SVC linear c: 100 gamma: 10 accuracy: 0.832208293153
+SVC rbf c: 100 gamma: 10 accuracy: 0.848842815815
+SVC linear c: 100 gamma: 100 accuracy: 0.832208293153
+SVC rbf c: 100 gamma: 100 accuracy: 0.848842815815
+SVC linear c: 1000 gamma: 1 accuracy: 0.832208293153
+SVC rbf c: 1000 gamma: 1 accuracy: 0.847878495661
+SVC linear c: 1000 gamma: 10 accuracy: 0.832208293153
+SVC rbf c: 1000 gamma: 10 accuracy: 0.848119575699
+SVC linear c: 1000 gamma: 100 accuracy: 0.832208293153
+SVC rbf c: 1000 gamma: 100 accuracy: 0.845949855352

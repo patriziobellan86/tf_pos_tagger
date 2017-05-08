@@ -139,8 +139,8 @@ def TestingNNs(f):
     
     for epsilon in [1e-02, 1e-08]:  
         for n_hidden_1 in [250, 500]:
-             h1(f,learning_rate,training_epochs, 
-                   batch_size,n_hidden_1, n_hidden_2,n_hidden3,
+            h1(f,learning_rate,training_epochs, 
+                   batch_size,n_hidden_1, 0,0,
                    n_input,n_classes,beta1,beta2,epsilon,
                    '1layers_')
             for n_hidden_2 in [125, 250]:
